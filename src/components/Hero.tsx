@@ -62,7 +62,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRental, onOpenTaxi }) => {
             </div>
 
             <p className="text-sm sm:text-base lg:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
-              Nikmati kenyamanan mobilitas ramah lingkungan bersama <strong>Surabaya EV Rent</strong> (Powered by Smart Journey). Layanan rental harian (H-1) dan taksi listrik di Surabaya, Sidoarjo, dan Malang dengan armada modern VinFast VF 5 &amp; VF e34 serta driver profesional bersertifikasi.
+              Nikmati kenyamanan mobilitas ramah lingkungan bersama <strong>Surabaya EV Rent</strong> (Powered by PT Sawah Jaya Trans). Layanan rental harian (H-1) dan taksi listrik di Surabaya, Sidoarjo, dan Malang dengan armada modern VinFast VF 5 &amp; VF e34 serta driver profesional bersertifikasi.
             </p>
 
             {/* Dua CTA Utama */}

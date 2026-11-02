@@ -83,7 +83,7 @@ const CITY_SEO_DATA = {
     title: 'Taksi Mobil Listrik Jawa Timur — Tarif Pasti Rp7.000 / km',
     metaTitle: 'Surabaya EV Rent - Taksi Mobil Listrik Jatim | Rp7.000/km',
     description:
-      'Layanan taksi listrik modern Surabaya EV Rent (Powered by Smart Journey). Perjalanan point-to-point dengan tarif flat Rp7.000 per kilometer. Nyaman, dingin, dan bebas bau asap.',
+      'Layanan taksi listrik modern Surabaya EV Rent (Powered by PT Sawah Jaya Trans). Perjalanan point-to-point dengan tarif flat Rp7.000 per kilometer. Nyaman, dingin, dan bebas bau asap.',
     badge: 'Layanan Taksi Listrik Masa Depan',
     highlights: [
       {

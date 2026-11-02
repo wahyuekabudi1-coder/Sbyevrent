@@ -173,7 +173,7 @@ function seedInitialData() {
   if (settingsCount === 0) {
     const insertSetting = db.prepare('INSERT INTO system_settings (key, value) VALUES (?, ?)');
     insertSetting.run('company_name', 'PT SAWAH JAYA TRANS');
-    insertSetting.run('brand_power', 'Smart Journey');
+    insertSetting.run('brand_power', 'PT Sawah Jaya Trans');
     insertSetting.run('whatsapp_cs', '081234567890');
     insertSetting.run('taxi_base_fare_per_km', '7000');
     insertSetting.run('taxi_min_fare', '25000');

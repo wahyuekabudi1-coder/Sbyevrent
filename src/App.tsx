@@ -4,6 +4,8 @@ import { Hero } from './components/Hero';
 import { WhyChooseUs } from './components/WhyChooseUs';
 import { VehicleFleet } from './components/VehicleFleet';
 import { ServicesAndPackages } from './components/ServicesAndPackages';
+import { CustomerReviews } from './components/CustomerReviews';
+import { NewsletterSubscription } from './components/NewsletterSubscription';
 import { Footer } from './components/Footer';
 import { RentalBookingModal } from './components/RentalBookingModal';
 import { TaxiBookingModal } from './components/TaxiBookingModal';
@@ -112,6 +114,8 @@ export default function App() {
             onOpenRental={city => handleOpenRental()}
             onOpenTaxi={city => handleOpenTaxi()}
           />
+          <CustomerReviews />
+          <NewsletterSubscription />
         </main>
         <Footer
           onNavigatePage={setCurrentPage}
@@ -168,20 +172,26 @@ export default function App() {
         {/* SECTION 3 — WHY CHOOSE US */}
         <WhyChooseUs />
 
-        {/* SECTION 4 — PILIHAN KENDARAAN */}
+        {/* SECTION 4 — PILIHAN KENDARAAN (SLIDER KESAMPING & SPEK RINGKAS) */}
         <VehicleFleet
           onSelectVehicle={model => handleOpenRental({ model })}
         />
 
-        {/* SECTION 5 & 6 — LAYANAN KAMI & PAKET RENTAL */}
+        {/* SECTION 5 — PAKET RENTAL & DURASI (DENGAN DROPDOWN) */}
         <ServicesAndPackages
           pricingList={pricingList}
           onOpenRental={prefill => handleOpenRental(prefill)}
           onOpenTaxi={handleOpenTaxi}
         />
+
+        {/* SECTION 6 — ULASAN PELANGGAN GOOGLE (AUTO-SLIDE 3 DETIK) */}
+        <CustomerReviews />
+
+        {/* SECTION 7 — BERLANGGANAN INFO PROMO & DISKON */}
+        <NewsletterSubscription />
       </main>
 
-      {/* SECTION 13 — FOOTER DAN IDENTITAS PERUSAHAAN */}
+      {/* FOOTER DAN IDENTITAS PERUSAHAAN */}
       <Footer
         onNavigatePage={setCurrentPage}
         onOpenRental={() => handleOpenRental()}

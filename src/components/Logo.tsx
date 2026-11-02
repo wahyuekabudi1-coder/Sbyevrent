@@ -100,23 +100,23 @@ export const Logo: React.FC<LogoProps> = ({
 
       {showSubtitle && (
         <div
-          className={`flex flex-col justify-center border-l pl-2.5 sm:pl-3 leading-tight shrink-0 ${
-            lightMode ? 'border-brand-teal/40' : 'border-slate-200'
+          className={`flex flex-col justify-center border-l-2 pl-3 sm:pl-3.5 lg:pl-4 leading-tight shrink-0 ${
+            lightMode ? 'border-brand-teal/40' : 'border-slate-300'
           }`}
         >
-          {/* Judul Website persis seperti di Logo: Surabaya EV Rent */}
-          <div className="flex items-center gap-1 font-black text-sm sm:text-base lg:text-lg tracking-tight leading-none mb-0.5 whitespace-nowrap">
+          {/* Judul Website diperbesar agar proporsional dan seimbang dengan ukuran logo */}
+          <div className="flex items-center gap-1 sm:gap-1.5 font-black text-base xs:text-lg sm:text-xl lg:text-2xl xl:text-[26px] tracking-tight leading-none mb-1 whitespace-nowrap">
             <span className={lightMode ? 'text-white' : 'text-brand-primary'}>Surabaya</span>
             <span className="text-brand-lime font-black">EV</span>
             <span className={lightMode ? 'text-brand-mint' : 'text-brand-teal'}>Rent</span>
           </div>
 
           <span
-            className={`text-[9px] sm:text-[10px] lg:text-[11px] font-bold tracking-tight whitespace-nowrap ${
+            className={`text-[9px] xs:text-[10px] sm:text-xs lg:text-[12px] font-bold tracking-tight whitespace-nowrap ${
               lightMode ? 'text-brand-lime' : 'text-brand-teal'
             }`}
           >
-            Powered by Smart Journey
+            Powered by PT Sawah Jaya Trans
           </span>
         </div>
       )}
