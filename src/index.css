@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-dark: #062426;
+  --color-brand-primary: #093032;
+  --color-brand-teal: #017A83;
+  --color-brand-teal-hover: #02949f;
+  --color-brand-teal-light: #e6f6f7;
+  --color-brand-lime: #94C806;
+  --color-brand-lime-hover: #82b005;
+  --color-brand-lime-light: #f4fce3;
+  --color-brand-emerald: #028143;
+  --color-brand-emerald-hover: #036c38;
+  --color-brand-mint: #F0FAF7;
+  --color-brand-mint-subtle: #E6F5F0;
+}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Safe tap target defaults for mobile touch */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+}
+
+/* Custom horizontal scroll bar styling for responsive tables on touch devices */
+.responsive-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.responsive-table-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.responsive-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+.responsive-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.responsive-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Utility to hide scrollbars while preserving touch/trackpad swipe */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
