@@ -1,6 +1,6 @@
 {
   "name": "Sawah Jaya Trans - Rental & Taksi Mobil Listrik",
-  "description": "Platform resmi rental mobil listrik dan taksi listrik PT Sawah Jaya Trans (Powered by PT Sawah Jaya Trans) di Surabaya, Sidoarjo, dan Malang.",
+  "description": "Platform resmi rental mobil listrik dan taksi listrik Sawah Jaya Trans (Powered by Smart Journey) di Surabaya dan Sidoarjo.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

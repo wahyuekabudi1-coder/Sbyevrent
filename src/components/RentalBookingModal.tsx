@@ -22,7 +22,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Form States
-  const [city, setCity] = useState<'Surabaya' | 'Sidoarjo' | 'Malang'>('Surabaya');
+  const [city, setCity] = useState<'Surabaya' | 'Sidoarjo'>('Surabaya');
   const [date, setDate] = useState<string>('');
   const [time, setTime] = useState<string>('08:00');
   const [vehicleModel, setVehicleModel] = useState<'VinFast VF 5' | 'VinFast VF e34'>('VinFast VF 5');
@@ -214,8 +214,8 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                 <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">
                   Tahap 1 — Pilih Wilayah Layanan
                 </label>
-                <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                  {(['Surabaya', 'Sidoarjo', 'Malang'] as const).map(c => (
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                  {(['Surabaya', 'Sidoarjo'] as const).map(c => (
                     <button
                       key={c}
                       type="button"
@@ -456,7 +456,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                   <label className="block text-xs text-slate-700 mb-1 font-semibold">Perkiraan Tujuan / Rute</label>
                   <input
                     type="text"
-                    placeholder="Contoh: Area Bisnis Surabaya & Bandara"
+                    placeholder="Contoh: Area Bisnis Surabaya & Sidoarjo"
                     value={dropoffAddress}
                     onChange={e => setDropoffAddress(e.target.value)}
                     className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-teal text-slate-900 min-h-[44px]"

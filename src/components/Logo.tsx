@@ -116,7 +116,7 @@ export const Logo: React.FC<LogoProps> = ({
               lightMode ? 'text-brand-lime' : 'text-brand-teal'
             }`}
           >
-            Powered by PT Sawah Jaya Trans
+            Powered by Smart Journey
           </span>
         </div>
       )}

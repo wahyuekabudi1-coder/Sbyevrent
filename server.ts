@@ -64,12 +64,6 @@ app.get('/sitemap.xml', (req, res) => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>${baseUrl}/rental-mobil-listrik-malang</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>${baseUrl}/taksi-listrik</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>

@@ -3,7 +3,7 @@ import { Calendar, Navigation, Zap, ArrowLeft } from 'lucide-react';
 import { LiveryStripe, LiveryDividerStripe, SectionTechPattern } from './EvLiveryDecals';
 
 interface CitySeoPageProps {
-  cityKey: 'surabaya' | 'sidoarjo' | 'malang' | 'taxi';
+  cityKey: 'surabaya' | 'sidoarjo' | 'taxi';
   onBackHome: () => void;
   onOpenRental: (city?: string) => void;
   onOpenTaxi: (city?: string) => void;
@@ -18,8 +18,8 @@ const CITY_SEO_DATA = {
     badge: 'Kota Metropolitan & Bisnis Jawa Timur',
     highlights: [
       {
-        title: 'Antar Jemput Bandara Juanda & CBD',
-        desc: 'Layanan tepat waktu untuk penjemputan eksekutif di Bandara Internasional Juanda menuju kawasan segitiga emas Surabaya (Basuki Rachmat, Mayjen Sungkono, HR Muhammad).'
+        title: 'Antar Jemput Pusat Bisnis & CBD',
+        desc: 'Layanan tepat waktu untuk penjemputan eksekutif menuju kawasan segitiga emas Surabaya (Basuki Rachmat, Mayjen Sungkono, HR Muhammad).'
       },
       {
         title: 'Bebas Khawatir Efisiensi Perkotaan',
@@ -34,10 +34,10 @@ const CITY_SEO_DATA = {
     vehicleList: ['VinFast VF 5 (Compact EV Crossover)', 'VinFast VF e34 (Spacious SUV)']
   },
   sidoarjo: {
-    title: 'Rental Mobil Listrik Sidoarjo — Mobilitas Industri & Bandara',
+    title: 'Rental Mobil Listrik Sidoarjo — Mobilitas Industri & Bisnis',
     metaTitle: 'Surabaya EV Rent - Rental Mobil Listrik Sidoarjo',
     description:
-      'Sewa mobil listrik di Sidoarjo untuk kunjungan kawasan industri Berbek, Rungkut Industri, Jabon, serta drop-off cepat ke Terminal Purabaya dan Bandara Juanda bersama Surabaya EV Rent.',
+      'Sewa mobil listrik di Sidoarjo untuk kunjungan kawasan industri Berbek, Rungkut Industri, Jabon, serta mobilitas cepat antarkota bersama Surabaya EV Rent.',
     badge: 'Kawasan Penyangga & Koridor Logistik',
     highlights: [
       {
@@ -45,8 +45,8 @@ const CITY_SEO_DATA = {
         desc: 'Sangat cocok untuk kunjungan kerja, audit pabrik, dan inspeksi kawasan pergudangan di Waru, Gedangan, Buduran, hingga Porong.'
       },
       {
-        title: 'Lokasi Strategis Gerbang Bandara Juanda',
-        desc: 'Jarak dekat dengan T1 dan T2 Juanda memastikan armada kami selalu siaga menjemput tamu perusahaan Anda tanpa jeda keterlambatan.'
+        title: 'Lokasi Strategis Koridor Bisnis',
+        desc: 'Armada kami selalu siaga melayani mobilitas tamu perusahaan Anda dengan tepat waktu dan tanpa jeda keterlambatan.'
       },
       {
         title: 'Perjalanan Wisata & Kuliner Delta',
@@ -56,34 +56,11 @@ const CITY_SEO_DATA = {
     pricingSummary: 'Pilihan fleksibel 3 jam, 5 jam, 8 jam, dan 12 jam dengan garansi mobil terawat dan wangi.',
     vehicleList: ['VinFast VF 5 (Agile Urban EV)']
   },
-  malang: {
-    title: 'Rental Mobil Listrik Malang & Batu — Wisata Sejuk Tanpa Polusi',
-    metaTitle: 'Surabaya EV Rent - Rental Mobil Listrik Malang & Batu',
-    description:
-      'Nikmati liburan dan perjalanan dinas di Malang Raya & Kota Wisata Batu dengan mobil listrik VinFast VF e34 bersama Surabaya EV Rent. Torsi instan bertenaga melibas tanjakan pegunungan.',
-    badge: 'Destinasi Wisata Pegunungan & Pendidikan',
-    highlights: [
-      {
-        title: 'Torsi Elektrik Tangguh di Tanjakan Batu',
-        desc: 'Mobil listrik VinFast menghasilkan torsi instan sejak putaran awal, memberikan akselerasi halus dan bertenaga saat melintasi jalur perbukitan Batu, Pujon, dan Bromo.'
-      },
-      {
-        title: 'Udara Sejuk Kabin Hening Maksimal',
-        desc: 'Menikmati keindahan alam Malang Raya tanpa kebisingan dan tanpa mencemari udara pegunungan yang segar.'
-      },
-      {
-        title: 'Penjemputan Stasiun Malang Kota Baru',
-        desc: 'Driver kami siap menyambut kedatangan Anda langsung di pintu keluar stasiun kereta api maupun bandara Abdulrachman Saleh.'
-      }
-    ],
-    pricingSummary: 'Tersedia unit SUV VinFast VF e34 berdimensi lapang untuk kenyamanan perjalanan keluarga.',
-    vehicleList: ['VinFast VF e34 (Mid-size EV C-SUV)']
-  },
   taxi: {
     title: 'Taksi Mobil Listrik Jawa Timur — Tarif Pasti Rp7.000 / km',
     metaTitle: 'Surabaya EV Rent - Taksi Mobil Listrik Jatim | Rp7.000/km',
     description:
-      'Layanan taksi listrik modern Surabaya EV Rent (Powered by PT Sawah Jaya Trans). Perjalanan point-to-point dengan tarif flat Rp7.000 per kilometer. Nyaman, dingin, dan bebas bau asap.',
+      'Layanan taksi listrik modern Surabaya EV Rent (Powered by Smart Journey). Perjalanan point-to-point dengan tarif flat Rp7.000 per kilometer. Nyaman, dingin, dan bebas bau asap.',
     badge: 'Layanan Taksi Listrik Masa Depan',
     highlights: [
       {
@@ -110,7 +87,7 @@ export const CitySeoPage: React.FC<CitySeoPageProps> = ({
   onOpenRental,
   onOpenTaxi
 }) => {
-  const content = CITY_SEO_DATA[cityKey];
+  const content = CITY_SEO_DATA[cityKey] || CITY_SEO_DATA.surabaya;
 
   return (
     <div className="relative py-8 sm:py-12 lg:py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 min-h-screen overflow-hidden">
@@ -173,7 +150,7 @@ export const CitySeoPage: React.FC<CitySeoPageProps> = ({
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-            {content.highlights.map((h, i) => (
+            {content.highlights.map((h: { title: string; desc: string }, i: number) => (
               <div
                 key={i}
                 className="relative overflow-hidden p-5 sm:p-6 rounded-2xl border-2 border-brand-teal/20 bg-white shadow-sm space-y-2 hover:border-brand-teal transition-all group"

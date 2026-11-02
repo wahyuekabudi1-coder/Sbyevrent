@@ -144,6 +144,18 @@ export function initDatabase() {
       details TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+    CREATE TABLE IF NOT EXISTS vehicle_models (
+      id TEXT PRIMARY KEY,
+      model_name TEXT UNIQUE NOT NULL,
+      category TEXT NOT NULL,
+      tagline TEXT,
+      description TEXT,
+      image_url TEXT NOT NULL,
+      pricing_hint TEXT,
+      specs_json TEXT DEFAULT '[]',
+      is_active INTEGER DEFAULT 1,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
   `);
 
   // Migrasi otomatis: Pastikan kolom driver_name dan driver_phone ada pada tabel vehicles
@@ -164,6 +176,79 @@ export function initDatabase() {
     `);
   } catch {}
 
+  // Migrasi kolom image_url pada tabel vehicles
+  try {
+    db.exec(`ALTER TABLE vehicles ADD COLUMN image_url TEXT;`);
+  } catch {}
+
+  // Seed default vehicle_models jika belum ada
+  try {
+    const vf5Exists = db.prepare("SELECT count(*) as c FROM vehicle_models WHERE model_name = 'VinFast VF 5'").get() as { c: number };
+    if (vf5Exists.c === 0) {
+      db.prepare(`
+        INSERT INTO vehicle_models (id, model_name, category, tagline, description, image_url, pricing_hint, specs_json)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        'MOD-VF5',
+        'VinFast VF 5',
+        'Smart Compact Electric Crossover',
+        'Lincah & Nyaman di Perkotaan',
+        'Crossover listrik kompak dengan manuver lincah dan kabin senyap. Sangat ideal untuk perjalanan dinas, mobilitas harian dalam kota Surabaya, Sidoarjo, dan rute penghubung.',
+        'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=1000&q=80',
+        'Mulai Rp240.000 / 3 Jam',
+        JSON.stringify([
+          { label: 'Kapasitas', value: 'Maks. 3 Penumpang' },
+          { label: 'Layanan', value: 'Termasuk Driver' },
+          { label: 'Daya', value: 'Termasuk Baterai' },
+          { label: 'Tipe Bodi', value: 'Compact SUV' }
+        ])
+      );
+    }
+
+    const vfe34Exists = db.prepare("SELECT count(*) as c FROM vehicle_models WHERE model_name = 'VinFast VF e34'").get() as { c: number };
+    if (vfe34Exists.c === 0) {
+      db.prepare(`
+        INSERT INTO vehicle_models (id, model_name, category, tagline, description, image_url, pricing_hint, specs_json)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        'MOD-VFE34',
+        'VinFast VF e34',
+        'Spacious Mid-Size Electric SUV',
+        'Kabin Luas & Suspensi Lembut',
+        'SUV listrik mid-size berdimensi lega dengan bagasi fleksibel dan suspensi empuk. Memberikan kenyamanan kelas atas untuk agenda keluarga, eksekutif, dan perjalanan dinas antarkota Surabaya - Sidoarjo.',
+        'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1000&q=80',
+        'Mulai Rp290.000 / 3 Jam',
+        JSON.stringify([
+          { label: 'Kapasitas', value: 'Maks. 3 Penumpang' },
+          { label: 'Layanan', value: 'Termasuk Driver' },
+          { label: 'Daya', value: 'Termasuk Baterai' },
+          { label: 'Tipe Bodi', value: 'Mid C-SUV' }
+        ])
+      );
+    }
+  } catch (e) {
+    console.error('Error seeding vehicle_models:', e);
+  }
+
+  // Pembaruan branding resmi Sawah Jaya Trans, WhatsApp CS, dan wilayah operasi Surabaya & Sidoarjo
+  try {
+    db.exec(`
+      UPDATE system_settings SET value = 'SAWAH JAYA TRANS' WHERE key = 'company_name';
+      UPDATE system_settings SET value = 'Sawah Jaya Trans' WHERE key = 'brand_power';
+      UPDATE system_settings SET value = '082233697979' WHERE key = 'whatsapp_cs';
+      UPDATE vehicles SET city = 'Surabaya' WHERE city = 'Malang';
+      DELETE FROM rental_pricing WHERE city = 'Malang';
+      UPDATE drivers SET notes = 'Driver Surabaya - Spesialis Rute Eksekutif' WHERE id = 'DRV-002';
+      UPDATE vehicles SET notes = 'Armada Surabaya Timur & Pusat' WHERE code = 'SJT-VF5-02';
+
+      UPDATE vehicles SET image_url = 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=800&q=80'
+      WHERE model = 'VinFast VF 5' AND (image_url IS NULL OR image_url = '');
+
+      UPDATE vehicles SET image_url = 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80'
+      WHERE model = 'VinFast VF e34' AND (image_url IS NULL OR image_url = '');
+    `);
+  } catch {}
+
   seedInitialData();
 }
 
@@ -172,9 +257,9 @@ function seedInitialData() {
   const settingsCount = (db.prepare('SELECT count(*) as count FROM system_settings').get() as { count: number }).count;
   if (settingsCount === 0) {
     const insertSetting = db.prepare('INSERT INTO system_settings (key, value) VALUES (?, ?)');
-    insertSetting.run('company_name', 'PT SAWAH JAYA TRANS');
-    insertSetting.run('brand_power', 'PT Sawah Jaya Trans');
-    insertSetting.run('whatsapp_cs', '081234567890');
+    insertSetting.run('company_name', 'SAWAH JAYA TRANS');
+    insertSetting.run('brand_power', 'Sawah Jaya Trans');
+    insertSetting.run('whatsapp_cs', '082233697979');
     insertSetting.run('taxi_base_fare_per_km', '7000');
     insertSetting.run('taxi_min_fare', '25000');
     insertSetting.run('admin_pin', 'admin2026');
@@ -189,9 +274,9 @@ function seedInitialData() {
       VALUES (?, ?, ?, ?, ?, ?)
     `);
     insertDriver.run('DRV-001', 'Budi Santoso', '081234567801', '3578010203850001', '123456', 'Driver Senior Surabaya - Tersertifikasi EV');
-    insertDriver.run('DRV-002', 'Ahmad Fauzi', '081234567802', '3578010203870002', '123456', 'Driver Surabaya - Spesialis Rute Bandara');
+    insertDriver.run('DRV-002', 'Ahmad Fauzi', '081234567802', '3578010203870002', '123456', 'Driver Surabaya - Spesialis Rute Eksekutif');
     insertDriver.run('DRV-003', 'Rudi Hermawan', '081234567803', '3515010203890003', '123456', 'Driver Sidoarjo - Pengalaman Luar Kota');
-    insertDriver.run('DRV-004', 'Dwi Cahyono', '081234567804', '3573010203900004', '123456', 'Driver Malang - Paham Area Wisata Batu & Bromo');
+    insertDriver.run('DRV-004', 'Dwi Cahyono', '081234567804', '3573010203900004', '123456', 'Driver Surabaya/Sidoarjo - Spesialis Antarkota');
     insertDriver.run('DRV-005', 'Joko Prasetyo', '081234567805', '3578010203920005', '123456', 'Driver Surabaya/Sidoarjo - Berpengalaman VinFast');
   }
 
@@ -206,11 +291,11 @@ function seedInitialData() {
 
     // 3 Unit VinFast VF 5
     insertVehicle.run('VEH-001', 'SJT-VF5-01', 'VinFast VF 5', 'L 1821 EV', 'Surabaya', 'Budi Santoso', '081234567801', 'DRV-001', 'Armada Surabaya Pusat');
-    insertVehicle.run('VEH-002', 'SJT-VF5-02', 'VinFast VF 5', 'L 1822 EV', 'Surabaya', 'Ahmad Fauzi', '081234567802', 'DRV-002', 'Armada Surabaya Timur & Bandara');
+    insertVehicle.run('VEH-002', 'SJT-VF5-02', 'VinFast VF 5', 'L 1822 EV', 'Surabaya', 'Ahmad Fauzi', '081234567802', 'DRV-002', 'Armada Surabaya Timur & Pusat');
     insertVehicle.run('VEH-003', 'SJT-VF5-03', 'VinFast VF 5', 'W 1933 EV', 'Sidoarjo', 'Rudi Hermawan', '081234567803', 'DRV-003', 'Armada Sidoarjo');
 
     // 2 Unit VinFast VF e34
-    insertVehicle.run('VEH-004', 'SJT-VFE34-01', 'VinFast VF e34', 'N 1744 EV', 'Malang', 'Dwi Cahyono', '081234567804', 'DRV-004', 'Armada Malang & Wisata');
+    insertVehicle.run('VEH-004', 'SJT-VFE34-01', 'VinFast VF e34', 'L 1744 EV', 'Surabaya', 'Dwi Cahyono', '081234567804', 'DRV-004', 'Armada Surabaya VF e34');
     insertVehicle.run('VEH-005', 'SJT-VFE34-02', 'VinFast VF e34', 'L 1855 EV', 'Surabaya', 'Joko Prasetyo', '081234567805', 'DRV-005', 'Armada Surabaya');
   } else {
     // Pastikan data mobil yang sudah ada memiliki driver_name dan driver_phone
@@ -230,7 +315,7 @@ function seedInitialData() {
         WHEN code = 'SJT-VF5-03' THEN '081234567803'
         WHEN code = 'SJT-VFE34-01' THEN '081234567804'
         WHEN code = 'SJT-VFE34-02' THEN '081234567805'
-        ELSE COALESCE(driver_phone, '081234567890')
+        ELSE COALESCE(driver_phone, '082233697979')
       END
       WHERE driver_name IS NULL OR driver_name = '';
     `).run();
@@ -246,7 +331,7 @@ function seedInitialData() {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const cities = ['Surabaya', 'Sidoarjo', 'Malang'];
+    const cities = ['Surabaya', 'Sidoarjo'];
 
     // VinFast VF 5 (Harga referensi resmi perusahaan)
     const vf5Rates = [

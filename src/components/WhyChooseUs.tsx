@@ -110,7 +110,7 @@ export const WhyChooseUs: React.FC = () => {
           </div>
 
           <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto font-medium">
-            Kombinasi layanan terbaik dan armada terawat untuk perjalanan nyaman di Surabaya, Sidoarjo, dan Malang.
+            Kombinasi layanan terbaik dan armada terawat untuk perjalanan nyaman di Surabaya dan Sidoarjo.
           </p>
         </div>
 

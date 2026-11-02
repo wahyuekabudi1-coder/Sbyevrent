@@ -35,7 +35,7 @@ export const NewsletterSubscription: React.FC = () => {
         </h2>
 
         <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed font-normal">
-          Dapatkan kupon potongan harga sewa mobil listrik hingga 20%, info promo rute taksi bandara, dan update armada VinFast terbaru setiap bulan.
+          Dapatkan kupon potongan harga sewa mobil listrik hingga 20%, info promo rute taksi listrik, dan update armada VinFast terbaru setiap bulan.
         </p>
 
         {/* Form Berlangganan */}

@@ -5,88 +5,118 @@ import { LiveryStripe, SectionTechPattern } from './EvLiveryDecals';
 interface ReviewItem {
   id: number;
   name: string;
-  avatar: string;
   location: string;
   service: string;
   date: string;
   rating: number;
   content: string;
+  badgeColor: string;
 }
 
 export const CustomerReviews: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Helper untuk mendapatkan inisial 2 huruf dari nama reviewer
+  const getInitials = (name: string): string => {
+    const cleanName = name.replace(/^(dr\.|h\.|ir\.|drs\.)\s*/i, '').trim();
+    const parts = cleanName.split(' ').filter(Boolean);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
   const reviews: ReviewItem[] = [
     {
       id: 1,
       name: 'Hendra Wijaya',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
       location: 'Surabaya',
       service: 'Rental VinFast VF 5',
       date: '2 hari lalu',
       rating: 5,
+      badgeColor: 'from-teal-600 to-brand-primary',
       content:
-        'Sewa VF 5 buat perjalanan dinas dari Bandara Juanda ke beberapa kantor klien di Surabaya. Driver tepat waktu, berseragam rapi, mobil wangi dan AC dingin banget. Rekomendasi utama untuk mobilitas eksekutif!'
+        'Sewa VF 5 buat perjalanan dinas ke kantor rekanan di HR Muhammad Surabaya. Driver Mas Budi datang 15 menit lebih awal, mobil wangi, kabin senyap banget tanpa getaran. Sangat recommended buat mobilitas bisnis!'
     },
     {
       id: 2,
       name: 'Siti Rahmawati',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80',
-      location: 'Malang',
+      location: 'Sidoarjo',
       service: 'Rental VinFast VF e34',
       date: '4 hari lalu',
       rating: 5,
+      badgeColor: 'from-emerald-600 to-teal-700',
       content:
-        'Liburan keluarga ke Batu pakai VinFast VF e34. Kabinnya sangat lega, suspensi empuk, anak-anak nyaman sepanjang perjalanan. Driver Pak Dwi sangat sopan dan paham rute wisata bebas macet.'
+        'Pesan VF e34 buat antar keluarga silaturahmi keliling Sidoarjo sampai Surabaya. Kabinnya lapang banget, bagasi muat banyak koper, suspensinya empuk dan nyaman. Driver Pak Ahmad sangat sopan dan hafal jalan bebas macet.'
     },
     {
       id: 3,
       name: 'Kevin Pratama',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80',
-      location: 'Sidoarjo',
+      location: 'Surabaya',
       service: 'Rental Paket 8 Jam',
       date: '1 minggu lalu',
       rating: 5,
+      badgeColor: 'from-sky-600 to-brand-teal',
       content:
-        'Paket 8 jam sangat praktis untuk urusan bisnis Sidoarjo-Surabaya. Tarif all-in sudah termasuk driver & listrik, tanpa argo siluman. Proses booking digitalnya sangat cepat dan transparan.'
+        'Paket 8 jam sangat membantu untuk keliling beberapa agenda meeting di Surabaya Pusat dan Timur. Tarif transparan sudah all-in driver dan listrik tanpa biaya tak terduga. Proses booking online cepat dan praktis.'
     },
     {
       id: 4,
       name: 'dr. Andy Wicaksono',
-      avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=150&q=80',
       location: 'Surabaya',
       service: 'Rental VinFast VF 5',
       date: '1 minggu lalu',
       rating: 5,
+      badgeColor: 'from-teal-700 to-emerald-800',
       content:
-        'Pertama kali mencoba mobil listrik bersama Surabaya EV Rent. Mobil senyap tanpa getaran mesin, sangat bersih dan higienis. Pelayanan driver tersertifikasi sangat memuaskan.'
+        'Pertama kali mencoba rental mobil listrik bersama Surabaya EV Rent. Sangat puas dengan standar kebersihan armada dan profesionalisme drivernya. Nyaman tanpa suara bising mesin, udara AC sejuk dan higienis.'
     },
     {
       id: 5,
       name: 'Maya Anggraini',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-      location: 'Surabaya',
-      service: 'Taksi Mobil Listrik',
+      location: 'Sidoarjo',
+      service: 'Taksi Listrik Antarkota',
       date: '2 minggu lalu',
       rating: 5,
+      badgeColor: 'from-brand-teal to-teal-900',
       content:
-        'Pesan taksi listrik dari Bandara Juanda ke Stasiun Gubeng. Tarifnya flat Rp7.000/km tanpa lonjakan jam sibuk. Driver sangat ramah dan sigap membantu koper bawaan saya.'
+        'Pesan taksi listrik dari perumahan di Waru Sidoarjo ke kawasan perkantoran di Surabaya. Tarif flat Rp7.000/km sangat bersahabat dibanding taksi konvensional. Penjemputan tepat waktu dan driver sigap membantu koper bawaan saya.'
     },
     {
       id: 6,
       name: 'Bambang Soedjarwo',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
-      location: 'Malang',
+      location: 'Surabaya',
       service: 'Rental Paket 12 Jam',
+      date: '2 minggu lalu',
+      rating: 5,
+      badgeColor: 'from-emerald-700 to-brand-primary',
+      content:
+        'Sewa 12 jam untuk kunjungan tamu direksi dari Jakarta. Tamu sangat terkesan dengan kenyamanan dan ketenangan mobil listrik VinFast. Layanan Sawah Jaya Trans luar biasa profesional dan terpercaya!'
+    },
+    {
+      id: 7,
+      name: 'Ratna Dewi',
+      location: 'Surabaya',
+      service: 'Taksi Mobil Listrik',
       date: '3 minggu lalu',
       rating: 5,
+      badgeColor: 'from-cyan-700 to-brand-teal',
       content:
-        'Sewa 12 jam untuk acara reuni keluarga di Malang. Kondisi armada prima 100%, baterai siap jarak jauh. Terima kasih PT Sawah Jaya Trans atas layanannya yang luar biasa profesional!'
+        'Sering order taksi listriknya kalau mau belanja dan urusan keluarga ke Tunjungan Plaza atau Pakuwon Mall. Driver rapi berseragam dan cara mengemudinya sangat halus. Terasa jauh lebih aman dan nyaman.'
+    },
+    {
+      id: 8,
+      name: 'Faisal Basri',
+      location: 'Sidoarjo',
+      service: 'Rental Paket 5 Jam',
+      date: '3 minggu lalu',
+      rating: 5,
+      badgeColor: 'from-teal-600 to-emerald-700',
+      content:
+        'Mobil listriknya bertenaga, kabin bersih dan sejuk. Pelayanan WhatsApp customer care sangat responsif saat konsultasi rute dan ketersediaan unit. Pasti langganan terus untuk agenda dinas di Sidoarjo & Surabaya.'
     }
   ];
 
-  // Auto-slide otomatis geser ke kanan setiap 3 detik (3000ms)
+  // Auto-slide otomatis geser ke kanan setiap 4 detik (4000ms)
   useEffect(() => {
     if (isPaused) return;
 
@@ -106,7 +136,7 @@ export const CustomerReviews: React.FC = () => {
           container.scrollBy({ left: cardWidth, behavior: 'smooth' });
         }
       }
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [isPaused]);
@@ -159,11 +189,11 @@ export const CustomerReviews: React.FC = () => {
             ULASAN PELANGGAN DI GOOGLE
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 mt-1.5 font-medium">
-            Testimoni otentik dari pengguna layanan rental dan taksi mobil listrik PT Sawah Jaya Trans.
+            Testimoni otentik dari pengguna layanan rental dan taksi mobil listrik Sawah Jaya Trans.
           </p>
         </div>
 
-        {/* Carousel Container: Geser Otomatis ke Kanan Setiap 3 Detik (Tanpa Tombol, Pause on Hover, Swipeable) */}
+        {/* Carousel Container: Geser Otomatis ke Kanan Setiap 4 Detik (Tanpa Tombol, Pause on Hover, Swipeable) */}
         <div
           ref={scrollRef}
           onMouseEnter={() => setIsPaused(true)}
@@ -178,15 +208,15 @@ export const CustomerReviews: React.FC = () => {
               className="w-[280px] sm:w-[340px] shrink-0 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
             >
               <div>
-                {/* Header Review: Profil & Google Verified */}
+                {/* Header Review: Profil Inisial Nama & Google Verified */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={rev.avatar}
-                      alt={rev.name}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-brand-teal/20"
-                      loading="lazy"
-                    />
+                    <div
+                      className={`w-10 h-10 rounded-full bg-gradient-to-br ${rev.badgeColor} text-white flex items-center justify-center font-black text-xs tracking-wider shadow-xs border-2 border-white ring-2 ring-slate-100 shrink-0`}
+                      title={`Reviewer: ${rev.name}`}
+                    >
+                      {getInitials(rev.name)}
+                    </div>
                     <div>
                       <h4 className="text-sm font-bold text-slate-900 leading-tight">
                         {rev.name}
@@ -233,7 +263,7 @@ export const CustomerReviews: React.FC = () => {
         {/* Petunjuk Penggunaan Halus */}
         <div className="mt-4 text-center">
           <span className="text-[11px] text-slate-400 font-medium">
-            Otomatis bergeser setiap 3 detik · Arahkan kursor atau sentuh untuk membaca
+            Otomatis bergeser setiap 4 detik · Arahkan kursor atau sentuh untuk membaca
           </span>
         </div>
 

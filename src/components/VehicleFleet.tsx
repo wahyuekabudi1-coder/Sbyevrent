@@ -41,7 +41,7 @@ export const VehicleFleet: React.FC<VehicleFleetProps> = ({ onSelectVehicle }) =
       category: 'Spacious Mid-Size Electric SUV',
       tagline: 'Kabin Luas & Suspensi Lembut',
       description:
-        'SUV listrik mid-size berdimensi lega dengan bagasi fleksibel dan suspensi empuk. Memberikan kenyamanan kelas atas untuk agenda keluarga, eksekutif, dan perjalanan wisata Malang - Batu.',
+        'SUV listrik mid-size berdimensi lega dengan bagasi fleksibel dan suspensi empuk. Memberikan kenyamanan kelas atas untuk agenda keluarga, eksekutif, dan perjalanan dinas antarkota Surabaya - Sidoarjo.',
       image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1000&q=80',
       pricingHint: 'Mulai Rp290.000 / 3 Jam',
       specs: [
@@ -49,7 +49,7 @@ export const VehicleFleet: React.FC<VehicleFleetProps> = ({ onSelectVehicle }) =
         { label: 'Layanan', value: 'Termasuk Driver', icon: UserCheck },
         { label: 'Daya', value: 'Termasuk Baterai', icon: BatteryCharging },
         { label: 'Tipe Bodi', value: 'Mid C-SUV', icon: Gauge },
-        { label: 'Operasi', value: 'Surabaya · Malang', icon: MapPin },
+        { label: 'Operasi', value: 'Surabaya · Sidoarjo', icon: MapPin },
         { label: 'Standar', value: 'Reservasi H-1', icon: Clock }
       ]
     }
@@ -111,7 +111,7 @@ export const VehicleFleet: React.FC<VehicleFleetProps> = ({ onSelectVehicle }) =
           </div>
 
           <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-medium">
-            Geser ke samping untuk melihat pilihan armada VinFast VF 5 dan VF e34 resmi PT Sawah Jaya Trans.
+            Geser ke samping untuk melihat pilihan armada VinFast VF 5 dan VF e34 resmi Sawah Jaya Trans.
           </p>
         </div>
 

@@ -13,6 +13,12 @@ export const api = {
     return json.data;
   },
 
+  async getFleetModels() {
+    const res = await fetch('/api/fleet-models');
+    const json = await res.json();
+    return json;
+  },
+
   async getAvailability(city: string, date: string): Promise<AvailabilitySummary> {
     const res = await fetch(`/api/availability?city=${encodeURIComponent(city)}&date=${encodeURIComponent(date)}`);
     const json = await res.json();
@@ -149,6 +155,37 @@ export const api = {
     const res = await fetch(`/api/admin/vehicles/${id}`, {
       method: 'DELETE',
       headers: { 'x-admin-key': adminPin },
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message);
+    return json;
+  },
+
+  async getAdminModelImages(adminPin: string) {
+    const res = await fetch('/api/admin/models/images', {
+      headers: { 'x-admin-key': adminPin },
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message);
+    return json.data;
+  },
+
+  async updateAdminModelImage(adminPin: string, model: string, imageUrl: string) {
+    const res = await fetch('/api/admin/models/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': adminPin },
+      body: JSON.stringify({ model, imageUrl }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message);
+    return json;
+  },
+
+  async resetAdminModelImage(adminPin: string, model: string) {
+    const res = await fetch('/api/admin/models/image', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'x-admin-key': adminPin },
+      body: JSON.stringify({ model }),
     });
     const json = await res.json();
     if (!res.ok) throw new Error(json.message);

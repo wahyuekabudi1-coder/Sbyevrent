@@ -12,6 +12,7 @@ import { TaxiBookingModal } from './components/TaxiBookingModal';
 import { PaymentModal } from './components/PaymentModal';
 import { BookingTrackerModal } from './components/BookingTrackerModal';
 import { CitySeoPage } from './components/CitySeoPage';
+import { FloatingWhatsApp } from './components/FloatingWhatsApp';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { api } from './lib/api';
 import { RentalPricingItem } from './types';
@@ -42,8 +43,6 @@ export default function App() {
         setCurrentPage('seo-surabaya');
       } else if (path === '/rental-mobil-listrik-sidoarjo') {
         setCurrentPage('seo-sidoarjo');
-      } else if (path === '/rental-mobil-listrik-malang') {
-        setCurrentPage('seo-malang');
       } else if (path === '/taksi-listrik') {
         setCurrentPage('seo-taxi');
       } else if (path.startsWith('/payment/')) {
@@ -97,7 +96,7 @@ export default function App() {
 
   // Render SEO City Pages
   if (currentPage.startsWith('seo-')) {
-    const cityKey = currentPage.replace('seo-', '') as 'surabaya' | 'sidoarjo' | 'malang' | 'taxi';
+    const cityKey = currentPage.replace('seo-', '') as 'surabaya' | 'sidoarjo' | 'taxi';
     return (
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Navbar
@@ -145,6 +144,8 @@ export default function App() {
           initialCode={trackerCode}
           onClose={() => setIsTrackerOpen(false)}
         />
+        {/* Floating WhatsApp CTA */}
+        <FloatingWhatsApp />
       </div>
     );
   }
@@ -225,6 +226,9 @@ export default function App() {
         initialCode={trackerCode}
         onClose={() => setIsTrackerOpen(false)}
       />
+
+      {/* Floating WhatsApp CTA */}
+      <FloatingWhatsApp />
 
     </div>
   );

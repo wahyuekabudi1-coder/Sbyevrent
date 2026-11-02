@@ -19,7 +19,7 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
   onOpenTaxi
 }) => {
   const [selectedModel, setSelectedModel] = useState<'VinFast VF 5' | 'VinFast VF e34'>('VinFast VF 5');
-  const [selectedCity, setSelectedCity] = useState<'Surabaya' | 'Sidoarjo' | 'Malang'>('Surabaya');
+  const [selectedCity, setSelectedCity] = useState<'Surabaya' | 'Sidoarjo'>('Surabaya');
   const [selectedDuration, setSelectedDuration] = useState<number | 'all'>('all');
 
   // Fallback data jika belum ter-load dari API
@@ -107,12 +107,11 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
               <div className="relative">
                 <select
                   value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value as 'Surabaya' | 'Sidoarjo' | 'Malang')}
+                  onChange={(e) => setSelectedCity(e.target.value as 'Surabaya' | 'Sidoarjo')}
                   className="w-full appearance-none bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-brand-teal pr-10 cursor-pointer shadow-2xs"
                 >
                   <option value="Surabaya">Surabaya</option>
                   <option value="Sidoarjo">Sidoarjo</option>
-                  <option value="Malang">Malang</option>
                 </select>
                 <ChevronDown className="w-4 h-4 text-slate-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
@@ -205,7 +204,7 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
               Taksi Mobil Listrik — Tarif Flat Rp7.000 / km
             </h4>
             <p className="text-xs text-slate-600 mt-0.5 font-medium">
-              Cocok untuk antar-jemput bandara Juanda atau bepergian instan tanpa sewa per jam.
+              Cocok untuk mobilitas harian perkotaan atau bepergian instan tanpa sewa per jam.
             </p>
           </div>
           <button
