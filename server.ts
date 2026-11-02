@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import { apiRouter } from './server/routes.js';
-import { initDatabase } from './server/db.js';
+import { apiRouter } from './server/routes.ts';
+import { initDatabase } from './server/db.ts';
 
 dotenv.config();
 
@@ -30,7 +30,6 @@ app.get('/robots.txt', (req, res) => {
   const content = `User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /driver
 Disallow: /api/
 
 Sitemap: ${protocol}://${host}/sitemap.xml

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calendar, Navigation, Zap, ArrowLeft } from 'lucide-react';
+import { LiveryStripe, LiveryDividerStripe, SectionTechPattern } from './EvLiveryDecals';
 
 interface CitySeoPageProps {
   cityKey: 'surabaya' | 'sidoarjo' | 'malang' | 'taxi';
@@ -112,26 +113,35 @@ export const CitySeoPage: React.FC<CitySeoPageProps> = ({
   const content = CITY_SEO_DATA[cityKey];
 
   return (
-    <div className="py-8 sm:py-12 lg:py-16 bg-white min-h-screen">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
+    <div className="relative py-8 sm:py-12 lg:py-16 bg-gradient-to-b from-slate-50 via-white to-slate-50 min-h-screen overflow-hidden">
+      <SectionTechPattern />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10 relative z-10">
         
         {/* Tombol Kembali (min 44px touch target) */}
         <button
           onClick={onBackHome}
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-600 hover:text-brand-teal transition-colors cursor-pointer py-2 min-h-[44px]"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-black text-slate-700 hover:text-brand-teal transition-colors cursor-pointer py-2 min-h-[44px]"
         >
-          <ArrowLeft className="w-4 h-4 text-brand-teal" />
+          <ArrowLeft className="w-4 h-4 text-brand-teal stroke-[2.5]" />
           <span>Kembali ke Beranda Utama</span>
         </button>
 
         {/* Hero Section Halaman SEO */}
-        <div className="space-y-3 sm:space-y-4">
-          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-brand-teal bg-brand-mint border border-brand-teal/20 px-2.5 sm:px-3 py-1 rounded-md inline-block">
-            {content.badge}
-          </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-primary tracking-tight leading-tight">
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2">
+            <LiveryStripe variant="compact" />
+            <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-brand-teal bg-white border-2 border-brand-teal/40 px-3 py-1.5 rounded-full shadow-xs inline-block">
+              {content.badge}
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-brand-primary tracking-tight leading-tight">
             {content.title}
           </h1>
+          <div className="flex items-center gap-1.5 py-1">
+            <span className="h-2 w-14 rounded-full bg-brand-lime shadow-xs" />
+            <span className="h-2 w-28 rounded-full bg-brand-teal shadow-xs" />
+            <span className="h-2 w-8 rounded-full bg-brand-primary shadow-xs" />
+          </div>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-3xl">
             {content.description}
           </p>
@@ -155,42 +165,65 @@ export const CitySeoPage: React.FC<CitySeoPageProps> = ({
         </div>
 
         {/* 3 Keunggulan Khusus Kota Ini */}
-        <div className="border-t border-slate-200 pt-8 sm:pt-10">
-          <h2 className="text-lg sm:text-xl font-extrabold text-brand-primary mb-4 sm:mb-6">
-            Keunggulan Layanan di Wilayah Ini
-          </h2>
+        <div className="border-t-2 border-slate-200/80 pt-8 sm:pt-10">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6">
+            <LiveryStripe variant="compact" />
+            <h2 className="text-lg sm:text-xl font-black text-brand-primary uppercase tracking-tight">
+              Keunggulan Layanan di Wilayah Ini
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {content.highlights.map((h, i) => (
-              <div key={i} className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-brand-mint/20 space-y-2 hover:border-brand-teal transition-colors">
-                <div className="w-8 h-8 rounded-lg bg-brand-mint text-brand-teal border border-brand-teal/20 flex items-center justify-center font-extrabold text-xs">
-                  0{i + 1}
+              <div
+                key={i}
+                className="relative overflow-hidden p-5 sm:p-6 rounded-2xl border-2 border-brand-teal/20 bg-white shadow-sm space-y-2 hover:border-brand-teal transition-all group"
+              >
+                {/* Top accent badge */}
+                <div className="flex items-center justify-between">
+                  <div className="w-9 h-9 rounded-xl bg-brand-mint text-brand-teal border-2 border-brand-teal/30 flex items-center justify-center font-black text-xs shadow-xs">
+                    0{i + 1}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="w-1.5 h-3 bg-brand-lime -skew-x-14 rounded-xs" />
+                    <span className="w-1.5 h-3 bg-brand-teal -skew-x-14 rounded-xs" />
+                  </div>
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-brand-primary pt-1">
+                <h3 className="text-sm sm:text-base font-black text-brand-primary pt-1 group-hover:text-brand-teal transition-colors">
                   {h.title}
                 </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed font-medium">
                   {h.desc}
                 </p>
+
+                {/* Bottom mini livery stripe */}
+                <div className="absolute bottom-0 inset-x-0 h-1.5 flex opacity-60 group-hover:opacity-100 transition-opacity">
+                  <div className="w-1/2 bg-brand-lime" />
+                  <div className="w-1/2 bg-brand-teal" />
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Info Armada & Tarif */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-brand-mint/80 border border-brand-teal/20 space-y-3">
-          <div className="flex items-center gap-2 text-brand-primary font-bold text-sm sm:text-base">
+        <div className="relative overflow-hidden p-5 sm:p-6 rounded-2xl bg-brand-mint/90 border-2 border-brand-teal/35 shadow-sm space-y-3">
+          <div className="flex items-center gap-2 text-brand-primary font-black text-sm sm:text-base">
             <Zap className="w-5 h-5 text-brand-lime fill-brand-lime shrink-0" />
             <span>Informasi Operasional &amp; Tarif Resmi</span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
             {content.pricingSummary}
           </p>
-          <div className="text-xs text-slate-600 pt-1 border-t border-brand-teal/15">
-            <strong className="text-brand-primary">Model Kendaraan Beroperasi:</strong>{' '}
+          <div className="text-xs text-slate-600 pt-2 border-t-2 border-brand-teal/20">
+            <strong className="text-brand-primary font-black">Model Kendaraan Beroperasi:</strong>{' '}
             {content.vehicleList.join(' · ')}
           </div>
         </div>
 
+      </div>
+
+      <div className="mt-12">
+        <LiveryDividerStripe />
       </div>
     </div>
   );

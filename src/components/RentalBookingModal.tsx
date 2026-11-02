@@ -542,7 +542,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                   Unit kendaraan akan dikunci selama <strong>15 menit</strong> di database untuk menyelesaikan pembayaran.
                 </p>
                 <p className="text-slate-600 text-[11px]">
-                  Plat nomor &amp; kontak driver akan dibuka H-1 malam setelah konfirmasi kesiapan driver.
+                  Plat nomor &amp; kontak driver dapat dipantau langsung di menu Cek Booking setelah pesanan terdaftar.
                 </p>
               </div>
 

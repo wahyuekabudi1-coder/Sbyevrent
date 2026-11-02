@@ -22,9 +22,11 @@ export interface RentalPricingItem {
 export interface Vehicle {
   id: string;
   code: string;
-  model: 'VinFast VF 5' | 'VinFast VF e34';
+  model: 'VinFast VF 5' | 'VinFast VF e34' | string;
   plate_number: string;
-  city: 'Surabaya' | 'Sidoarjo' | 'Malang';
+  city: 'Surabaya' | 'Sidoarjo' | 'Malang' | string;
+  driver_name: string;
+  driver_phone?: string;
   dedicated_driver_id?: string;
   dedicated_driver_name?: string;
   is_active: number;

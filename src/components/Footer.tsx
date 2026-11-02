@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Logo } from './Logo';
 import { LiveryDividerStripe, LiveryStripe } from './EvLiveryDecals';
 import { ShieldCheck, Phone, Mail, MapPin } from 'lucide-react';
@@ -14,6 +14,18 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRental,
   onOpenTaxi
 }) => {
+  const [adminClicks, setAdminClicks] = useState(0);
+
+  const handleCopyrightClick = () => {
+    setAdminClicks((prev) => {
+      const next = prev + 1;
+      // Jika ngeklik 14 kali, kembali semula (reset ke 0)
+      if (next >= 14) {
+        return 0;
+      }
+      return next;
+    });
+  };
   return (
     <footer className="bg-brand-dark text-slate-300 border-t border-brand-teal/20 relative">
       {/* Ornamen Garis Livery Mobil Listrik di Atas Footer */}
@@ -68,22 +80,6 @@ export const Footer: React.FC<FooterProps> = ({
                   className="hover:text-brand-lime transition-colors cursor-pointer text-left py-1 block"
                 >
                   Taksi Mobil Listrik (Rp7.000/km)
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigatePage('driver')}
-                  className="hover:text-white transition-colors cursor-pointer text-left py-1 block text-brand-lime font-semibold"
-                >
-                  Portal Khusus Driver
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigatePage('admin')}
-                  className="hover:text-slate-300 transition-colors cursor-pointer text-left py-1 block text-slate-400"
-                >
-                  Portal Manajemen Admin
                 </button>
               </li>
             </ul>
@@ -158,9 +154,28 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Garis Bawah & Hak Cipta */}
         <div className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-brand-teal/20 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-left">
-          <p>
-            &copy; {new Date().getFullYear()} Surabaya EV Rent. Hak cipta dilindungi.
-          </p>
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <span
+              onClick={handleCopyrightClick}
+              className="select-none cursor-pointer hover:text-slate-400 transition-colors"
+              title=""
+            >
+              &copy; {new Date().getFullYear()} Surabaya EV Rent. Hak cipta dilindungi.
+            </span>
+
+            {/* Tombol Tersembunyi: Hanya muncul saat copyright diklik 10 sampai 13 kali. Pada klik ke-14 kembali semula (sembunyi) */}
+            {adminClicks >= 10 && adminClicks <= 13 && (
+              <button
+                onClick={() => onNavigatePage('admin')}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-brand-primary text-brand-lime border border-brand-lime/40 text-[10px] font-bold shadow-md hover:bg-slate-800 transition-all cursor-pointer animate-pulse"
+                title="Akses Rahasia Pengelola Admin"
+              >
+                <ShieldCheck className="w-3 h-3 text-brand-lime" />
+                <span>Dashboard Admin</span>
+              </button>
+            )}
+          </div>
+
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
             <span>Kebijakan Privasi</span>
             <span aria-hidden="true">·</span>

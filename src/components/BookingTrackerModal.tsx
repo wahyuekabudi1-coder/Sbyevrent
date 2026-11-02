@@ -160,31 +160,29 @@ export const BookingTrackerModal: React.FC<BookingTrackerModalProps> = ({
                 </div>
               </div>
 
-              {/* Informasi Driver & Plat Nomor (Diproteksi Aturan Bisnis) */}
+              {/* Informasi Mobil & Driver */}
               <div className="p-3.5 sm:p-4 rounded-xl border border-brand-teal/20 bg-brand-mint/50 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-brand-primary flex items-center gap-1.5">
                     <Car className="w-4 h-4 text-brand-teal shrink-0" />
-                    <span>Armada &amp; Driver Penjemput</span>
+                    <span>Armada Mobil &amp; Driver Penjemput</span>
                   </span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                    booking.driverStatus === 'ready'
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}>
-                    {booking.driverStatus === 'ready' ? 'Driver Siap Bertugas' : 'Menunggu Konfirmasi H-1'}
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800">
+                    Armada &amp; Driver Siap
                   </span>
                 </div>
 
                 <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between items-center py-1 border-b border-brand-teal/20">
-                    <span className="text-slate-600">Nomor Polisi:</span>
-                    <strong className="font-mono text-slate-900 font-bold">{booking.plateNumber}</strong>
+                    <span className="text-slate-600">Nomor Plat Mobil:</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded bg-slate-900 text-white font-mono font-bold text-xs tracking-wider">
+                      {booking.plateNumber || '-'}
+                    </span>
                   </div>
 
                   <div className="flex justify-between items-center py-1 border-b border-brand-teal/20">
                     <span className="text-slate-600">Nama Driver:</span>
-                    <strong className="text-slate-900 font-bold">{booking.driverName}</strong>
+                    <strong className="text-slate-900 font-bold">{booking.driverName || 'Driver Operasional'}</strong>
                   </div>
 
                   {booking.driverPhone && (
@@ -202,15 +200,6 @@ export const BookingTrackerModal: React.FC<BookingTrackerModalProps> = ({
                     </div>
                   )}
                 </div>
-
-                {booking.driverStatus !== 'ready' && (
-                  <div className="text-[11px] text-slate-600 flex items-start gap-1.5 pt-1">
-                    <Shield className="w-3.5 h-3.5 text-brand-teal shrink-0 mt-0.5" />
-                    <span>
-                      Sesuai SOP keamanan, nomor polisi dan kontak driver akan dibuka H-1 malam setelah driver melakukan konfirmasi kesiapan tugas.
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
           )}

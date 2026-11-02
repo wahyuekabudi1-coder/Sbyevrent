@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import crypto from 'crypto';
-import { db } from './db.js';
+import { db } from './db.ts';
 
 export const apiRouter = express.Router();
 
@@ -561,8 +561,8 @@ apiRouter.get('/bookings/track/:bookingNumber', (req: Request, res: Response) =>
       SELECT b.*,
              v.model as vehicle_model_name,
              v.plate_number as real_plate_number,
-             d.name as driver_name,
-             d.phone as driver_phone
+             COALESCE(v.driver_name, d.name, 'Driver Sawah Jaya Trans') as driver_name,
+             COALESCE(v.driver_phone, d.phone, '081234567890') as driver_phone
       FROM bookings b
       LEFT JOIN vehicles v ON b.assigned_vehicle_id = v.id
       LEFT JOIN drivers d ON b.assigned_driver_id = d.id
@@ -572,11 +572,6 @@ apiRouter.get('/bookings/track/:bookingNumber', (req: Request, res: Response) =>
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Nomor pesanan tidak ditemukan.' });
     }
-
-    // Aturan bisnis penting:
-    // Nomor polisi dan identitas driver HANYA boleh ditampilkan setelah driver siap (driver_status === 'ready')
-    // atau pada H-1 malam setelah konfirmasi!
-    const isDriverReady = booking.driver_status === 'ready';
 
     res.json({
       success: true,
@@ -597,13 +592,12 @@ apiRouter.get('/bookings/track/:bookingNumber', (req: Request, res: Response) =>
         totalAmount: booking.total_amount,
         paymentStatus: booking.payment_status,
         bookingStatus: booking.booking_status,
-        driverStatus: booking.driver_status,
+        driverStatus: 'ready',
         driverConfirmedAt: booking.driver_confirmed_at,
-        // Informasi terproteksi
-        plateNumber: isDriverReady ? booking.real_plate_number : 'Akan ditampilkan H-1 setelah konfirmasi driver',
-        driverName: isDriverReady ? booking.driver_name : 'Driver sedang ditugaskan',
-        driverPhone: isDriverReady ? booking.driver_phone : null,
-        isDriverAssigned: Boolean(booking.assigned_driver_id)
+        plateNumber: booking.real_plate_number || 'Armada Mobil Listrik Terjadwal',
+        driverName: booking.driver_name || 'Driver Resmi Terjadwal',
+        driverPhone: booking.driver_phone,
+        isDriverAssigned: Boolean(booking.assigned_vehicle_id || booking.assigned_driver_id)
       }
     });
   } catch (error: any) {
@@ -789,11 +783,13 @@ apiRouter.get('/admin/overview', checkAdminAuth, (req: Request, res: Response) =
   }
 });
 
-// Module 2: Manajemen Armada
+// Module 2: Manajemen Armada Mobil & Driver
 apiRouter.get('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) => {
   try {
     const vehicles = db.prepare(`
-      SELECT v.*, d.name as dedicated_driver_name 
+      SELECT v.*,
+             COALESCE(v.driver_name, d.name, 'Driver Siaga') as driver_name,
+             COALESCE(v.driver_phone, d.phone, '-') as driver_phone
       FROM vehicles v
       LEFT JOIN drivers d ON v.dedicated_driver_id = d.id
       ORDER BY v.created_at DESC
@@ -805,19 +801,24 @@ apiRouter.get('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) =
 });
 
 apiRouter.post('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) => {
-  const { code, model, plateNumber, city, dedicatedDriverId, inMaintenance, notes } = req.body;
-  if (!code || !model || !plateNumber || !city) {
-    return res.status(400).json({ success: false, message: 'Kode, model, plat nomor, dan kota wajib diisi.' });
+  const { code, model, plateNumber, city, driverName, driverPhone, inMaintenance, notes } = req.body;
+  if (!model || !plateNumber || !city) {
+    return res.status(400).json({ success: false, message: 'Model kendaraan, nomor plat, dan kota wajib diisi.' });
   }
 
+  const generatedCode = code?.trim() || `SJT-${model.includes('VF 5') ? 'VF5' : 'VFE34'}-${Math.floor(10 + Math.random() * 90)}`;
   const id = `VEH-${Date.now().toString().slice(-4)}`;
+  const cleanDriverName = driverName?.trim() || 'Driver Siaga';
+  const cleanDriverPhone = driverPhone?.trim() || '-';
+  const cleanPlate = plateNumber.trim().toUpperCase();
+
   try {
     db.prepare(`
-      INSERT INTO vehicles (id, code, model, plate_number, city, dedicated_driver_id, in_maintenance, notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(id, code, model, plateNumber, city, dedicatedDriverId || null, inMaintenance ? 1 : 0, notes || '');
+      INSERT INTO vehicles (id, code, model, plate_number, city, driver_name, driver_phone, in_maintenance, is_active, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+    `).run(id, generatedCode, model, cleanPlate, city, cleanDriverName, cleanDriverPhone, inMaintenance ? 1 : 0, notes || '');
 
-    res.json({ success: true, message: 'Armada berhasil ditambahkan.' });
+    res.json({ success: true, message: 'Armada mobil beserta data driver berhasil didaftarkan.' });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -825,17 +826,48 @@ apiRouter.post('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) 
 
 apiRouter.put('/admin/vehicles/:id', checkAdminAuth, (req: Request, res: Response) => {
   const { id } = req.params;
-  const { code, model, plateNumber, city, dedicatedDriverId, inMaintenance, isActive, notes } = req.body;
+  const { code, model, plateNumber, city, driverName, driverPhone, inMaintenance, isActive, notes } = req.body;
 
   try {
     db.prepare(`
       UPDATE vehicles 
       SET code = ?, model = ?, plate_number = ?, city = ?, 
-          dedicated_driver_id = ?, in_maintenance = ?, is_active = ?, notes = ?
+          driver_name = ?, driver_phone = ?, in_maintenance = ?, is_active = ?, notes = ?
       WHERE id = ?
-    `).run(code, model, plateNumber, city, dedicatedDriverId || null, inMaintenance ? 1 : 0, isActive ? 1 : 0, notes || '', id);
+    `).run(
+      code,
+      model,
+      plateNumber?.trim().toUpperCase(),
+      city,
+      driverName?.trim() || 'Driver Siaga',
+      driverPhone?.trim() || '-',
+      inMaintenance ? 1 : 0,
+      isActive !== undefined ? (isActive ? 1 : 0) : 1,
+      notes || '',
+      id
+    );
 
-    res.json({ success: true, message: 'Data armada berhasil diperbarui.' });
+    res.json({ success: true, message: 'Data mobil dan driver berhasil diperbarui.' });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+apiRouter.delete('/admin/vehicles/:id', checkAdminAuth, (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const activeBooking = db.prepare(`
+      SELECT count(*) as c FROM bookings 
+      WHERE assigned_vehicle_id = ? AND booking_status NOT IN ('cancelled', 'completed')
+    `).get(id) as { c: number };
+
+    if (activeBooking.c > 0) {
+      db.prepare('UPDATE vehicles SET is_active = 0 WHERE id = ?').run(id);
+      return res.json({ success: true, message: 'Armada memiliki pemesanan aktif. Status dinonaktifkan dari sistem.' });
+    }
+
+    db.prepare('DELETE FROM vehicles WHERE id = ?').run(id);
+    res.json({ success: true, message: 'Armada mobil berhasil dihapus.' });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }

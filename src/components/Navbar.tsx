@@ -136,37 +136,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={onOpenTracker}
               className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-brand-teal hover:bg-brand-mint rounded-lg transition-colors cursor-pointer min-h-[44px]"
-              title="Lacak status booking dan info driver"
+              title="Lacak status booking dan info kendaraan"
             >
               <Search className="w-4 h-4 text-slate-500" />
               <span>Cek Booking</span>
             </button>
 
-            <button
-              onClick={() => onNavigatePage('driver')}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer min-h-[44px] ${
-                currentPage === 'driver'
-                  ? 'bg-brand-mint text-brand-teal font-bold'
-                  : 'text-slate-700 hover:bg-brand-mint/60 hover:text-brand-teal'
-              }`}
-              title="Portal Khusus Driver"
-            >
-              <UserCheck className="w-4 h-4 text-brand-teal" />
-              <span>Portal Driver</span>
-            </button>
-
-            <button
-              onClick={() => onNavigatePage('admin')}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer min-h-[44px] ${
-                currentPage === 'admin'
-                  ? 'bg-brand-primary text-white'
-                  : 'text-slate-600 hover:text-brand-primary hover:bg-slate-100'
-              }`}
-              title="Dashboard Pengelola"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>Admin</span>
-            </button>
 
             <button
               onClick={onOpenRental}
@@ -298,29 +273,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
 
-            <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-              <button
-                onClick={() => {
-                  onNavigatePage('driver');
-                  setMobileMenuOpen(false);
-                }}
-                className="px-3 py-3 text-sm font-semibold text-brand-teal bg-brand-mint hover:bg-brand-teal-light rounded-lg min-h-[44px] flex items-center justify-between"
-              >
-                <span>Portal Khusus Driver</span>
-                <UserCheck className="w-4 h-4 text-brand-teal" />
-              </button>
-
-              <button
-                onClick={() => {
-                  onNavigatePage('admin');
-                  setMobileMenuOpen(false);
-                }}
-                className="px-3 py-3 text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg min-h-[44px] flex items-center justify-between"
-              >
-                <span>Dashboard Pengelola Admin</span>
-                <ShieldCheck className="w-4 h-4 text-slate-600" />
-              </button>
-            </div>
 
             <div className="pt-2 flex flex-col gap-2">
               <button

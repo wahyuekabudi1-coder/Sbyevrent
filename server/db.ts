@@ -25,12 +25,15 @@ export function initDatabase() {
     );
 
     -- Tabel Kendaraan (Armada Mobil Listrik)
+    -- Setiap mobil langsung memuat informasi Plat Nomor dan Nama & Kontak Driver
     CREATE TABLE IF NOT EXISTS vehicles (
       id TEXT PRIMARY KEY,
       code TEXT UNIQUE NOT NULL,
       model TEXT NOT NULL, -- 'VinFast VF 5' | 'VinFast VF e34'
       plate_number TEXT UNIQUE NOT NULL,
       city TEXT NOT NULL, -- 'Surabaya' | 'Sidoarjo' | 'Malang'
+      driver_name TEXT,
+      driver_phone TEXT,
       dedicated_driver_id TEXT,
       is_active INTEGER DEFAULT 1,
       in_maintenance INTEGER DEFAULT 0,
@@ -143,6 +146,24 @@ export function initDatabase() {
     );
   `);
 
+  // Migrasi otomatis: Pastikan kolom driver_name dan driver_phone ada pada tabel vehicles
+  try {
+    db.exec(`ALTER TABLE vehicles ADD COLUMN driver_name TEXT;`);
+  } catch {}
+  try {
+    db.exec(`ALTER TABLE vehicles ADD COLUMN driver_phone TEXT;`);
+  } catch {}
+  try {
+    db.exec(`
+      UPDATE vehicles 
+      SET driver_name = (SELECT name FROM drivers WHERE drivers.id = vehicles.dedicated_driver_id)
+      WHERE (driver_name IS NULL OR driver_name = '') AND dedicated_driver_id IS NOT NULL;
+      UPDATE vehicles 
+      SET driver_phone = (SELECT phone FROM drivers WHERE drivers.id = vehicles.dedicated_driver_id)
+      WHERE (driver_phone IS NULL OR driver_phone = '') AND dedicated_driver_id IS NOT NULL;
+    `);
+  } catch {}
+
   seedInitialData();
 }
 
@@ -175,29 +196,44 @@ function seedInitialData() {
   }
 
   // 3. Cek & Isi Armada Awal (5 Unit Sesuai Spesifikasi Perusahaan)
-  // Dynamic inventory - tidak dihardcode di code, admin dapat menambah 10, 15, 20+ unit
+  // Setiap mobil memuat kode, model, plat nomor, kota, nama driver, nomor HP driver, dan status
   const fleetCount = (db.prepare('SELECT count(*) as count FROM vehicles').get() as { count: number }).count;
   if (fleetCount === 0) {
     const insertVehicle = db.prepare(`
-      INSERT INTO vehicles (id, code, model, plate_number, city, dedicated_driver_id, is_active, in_maintenance, notes)
-      VALUES (?, ?, ?, ?, ?, ?, 1, 0, ?)
+      INSERT INTO vehicles (id, code, model, plate_number, city, driver_name, driver_phone, dedicated_driver_id, is_active, in_maintenance, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)
     `);
 
     // 3 Unit VinFast VF 5
-    insertVehicle.run('VEH-001', 'SJT-VF5-01', 'VinFast VF 5', 'L 1821 EV', 'Surabaya', 'DRV-001', 'Armada Surabaya Pusat');
-    insertVehicle.run('VEH-002', 'SJT-VF5-02', 'VinFast VF 5', 'L 1822 EV', 'Surabaya', 'DRV-002', 'Armada Surabaya Timur & Bandara');
-    insertVehicle.run('VEH-003', 'SJT-VF5-03', 'VinFast VF 5', 'W 1933 EV', 'Sidoarjo', 'DRV-003', 'Armada Sidoarjo');
+    insertVehicle.run('VEH-001', 'SJT-VF5-01', 'VinFast VF 5', 'L 1821 EV', 'Surabaya', 'Budi Santoso', '081234567801', 'DRV-001', 'Armada Surabaya Pusat');
+    insertVehicle.run('VEH-002', 'SJT-VF5-02', 'VinFast VF 5', 'L 1822 EV', 'Surabaya', 'Ahmad Fauzi', '081234567802', 'DRV-002', 'Armada Surabaya Timur & Bandara');
+    insertVehicle.run('VEH-003', 'SJT-VF5-03', 'VinFast VF 5', 'W 1933 EV', 'Sidoarjo', 'Rudi Hermawan', '081234567803', 'DRV-003', 'Armada Sidoarjo');
 
     // 2 Unit VinFast VF e34
-    insertVehicle.run('VEH-004', 'SJT-VFE34-01', 'VinFast VF e34', 'N 1744 EV', 'Malang', 'DRV-004', 'Armada Malang & Wisata');
-    insertVehicle.run('VEH-005', 'SJT-VFE34-02', 'VinFast VF e34', 'L 1855 EV', 'Surabaya', 'DRV-005', 'Armada Surabaya');
-
-    // Tautkan kembali dedicated driver
-    db.prepare('UPDATE drivers SET assigned_vehicle_id = ? WHERE id = ?').run('VEH-001', 'DRV-001');
-    db.prepare('UPDATE drivers SET assigned_vehicle_id = ? WHERE id = ?').run('VEH-002', 'DRV-002');
-    db.prepare('UPDATE drivers SET assigned_vehicle_id = ? WHERE id = ?').run('VEH-003', 'DRV-003');
-    db.prepare('UPDATE drivers SET assigned_vehicle_id = ? WHERE id = ?').run('VEH-004', 'DRV-004');
-    db.prepare('UPDATE drivers SET assigned_vehicle_id = ? WHERE id = ?').run('VEH-005', 'DRV-005');
+    insertVehicle.run('VEH-004', 'SJT-VFE34-01', 'VinFast VF e34', 'N 1744 EV', 'Malang', 'Dwi Cahyono', '081234567804', 'DRV-004', 'Armada Malang & Wisata');
+    insertVehicle.run('VEH-005', 'SJT-VFE34-02', 'VinFast VF e34', 'L 1855 EV', 'Surabaya', 'Joko Prasetyo', '081234567805', 'DRV-005', 'Armada Surabaya');
+  } else {
+    // Pastikan data mobil yang sudah ada memiliki driver_name dan driver_phone
+    db.prepare(`
+      UPDATE vehicles 
+      SET driver_name = CASE 
+        WHEN code = 'SJT-VF5-01' THEN 'Budi Santoso'
+        WHEN code = 'SJT-VF5-02' THEN 'Ahmad Fauzi'
+        WHEN code = 'SJT-VF5-03' THEN 'Rudi Hermawan'
+        WHEN code = 'SJT-VFE34-01' THEN 'Dwi Cahyono'
+        WHEN code = 'SJT-VFE34-02' THEN 'Joko Prasetyo'
+        ELSE COALESCE(driver_name, 'Driver Operasional')
+      END,
+      driver_phone = CASE 
+        WHEN code = 'SJT-VF5-01' THEN '081234567801'
+        WHEN code = 'SJT-VF5-02' THEN '081234567802'
+        WHEN code = 'SJT-VF5-03' THEN '081234567803'
+        WHEN code = 'SJT-VFE34-01' THEN '081234567804'
+        WHEN code = 'SJT-VFE34-02' THEN '081234567805'
+        ELSE COALESCE(driver_phone, '081234567890')
+      END
+      WHERE driver_name IS NULL OR driver_name = '';
+    `).run();
   }
 
   // 4. Cek & Isi Matriks Harga Rental

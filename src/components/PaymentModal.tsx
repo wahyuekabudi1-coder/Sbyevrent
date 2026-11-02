@@ -195,7 +195,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <span>Pengungkapan Identitas Driver &amp; Plat:</span>
               </div>
               <p className="text-[11px] leading-relaxed">
-                Nomor polisi dan identitas driver akan tampil di menu <strong>Cek Booking</strong> pada H-1 malam setelah driver melakukan konfirmasi kesiapan tugas.
+                Nomor plat mobil dan identitas driver dapat langsung Anda pantau di menu <strong>Cek Booking</strong> menggunakan nomor pemesanan di atas.
               </p>
             </div>
 

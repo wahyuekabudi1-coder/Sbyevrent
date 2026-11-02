@@ -11,7 +11,6 @@ import { PaymentModal } from './components/PaymentModal';
 import { BookingTrackerModal } from './components/BookingTrackerModal';
 import { CitySeoPage } from './components/CitySeoPage';
 import { AdminDashboard } from './pages/AdminDashboard';
-import { DriverPortal } from './pages/DriverPortal';
 import { api } from './lib/api';
 import { RentalPricingItem } from './types';
 
@@ -37,8 +36,6 @@ export default function App() {
 
       if (path === '/admin' || hash === 'admin') {
         setCurrentPage('admin');
-      } else if (path === '/driver' || hash === 'driver') {
-        setCurrentPage('driver');
       } else if (path === '/rental-mobil-listrik-surabaya') {
         setCurrentPage('seo-surabaya');
       } else if (path === '/rental-mobil-listrik-sidoarjo') {
@@ -94,11 +91,6 @@ export default function App() {
   // Render Admin Dashboard Page
   if (currentPage === 'admin') {
     return <AdminDashboard onBackHome={() => setCurrentPage('home')} />;
-  }
-
-  // Render Driver Portal Page
-  if (currentPage === 'driver') {
-    return <DriverPortal onBackHome={() => setCurrentPage('home')} />;
   }
 
   // Render SEO City Pages

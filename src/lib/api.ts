@@ -145,6 +145,16 @@ export const api = {
     return json;
   },
 
+  async deleteAdminVehicle(adminPin: string, id: string) {
+    const res = await fetch(`/api/admin/vehicles/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-key': adminPin },
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message);
+    return json;
+  },
+
   async getAdminDrivers(adminPin: string) {
     const res = await fetch('/api/admin/drivers', {
       headers: { 'x-admin-key': adminPin },
