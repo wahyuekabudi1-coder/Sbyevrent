@@ -824,7 +824,7 @@ apiRouter.post('/driver/confirm-ready', (req: Request, res: Response) => {
 // Admin Auth Middleware sederhana
 function checkAdminAuth(req: Request, res: Response, next: Function) {
   const adminPinHeader = req.headers['x-admin-key'] as string;
-  const configuredPin = (db.prepare("SELECT value FROM system_settings WHERE key = 'admin_pin'").get() as any)?.value || 'admin2026';
+  const configuredPin = process.env.ADMIN_DEFAULT_PASSWORD || process.env.ADMIN_PIN || (db.prepare("SELECT value FROM system_settings WHERE key = 'admin_pin'").get() as any)?.value || 'admin2026';
 
   if (!adminPinHeader || adminPinHeader !== configuredPin) {
     return res.status(401).json({ success: false, message: 'Akses ditolak. PIN Admin tidak valid.' });

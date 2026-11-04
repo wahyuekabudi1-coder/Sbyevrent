@@ -3,17 +3,27 @@ import path from 'path';
 import fs from 'fs';
 
 // Database directory & persistent file
-const dataDir = path.resolve(process.cwd(), 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const dataDir = isServerless ? '/tmp' : path.resolve(process.cwd(), 'data');
+
+try {
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('[DB] Could not create data directory, using /tmp as fallback:', err);
 }
 
 const dbPath = path.join(dataDir, 'sjtrans.db');
 export const db = new Database(dbPath);
 
 // Enable WAL mode for high concurrency & foreign keys
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+try {
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+} catch (err) {
+  console.warn('[DB Pragma warning]:', err);
+}
 
 export function initDatabase() {
   db.exec(`
