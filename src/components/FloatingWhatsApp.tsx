@@ -9,8 +9,8 @@ export const FloatingWhatsApp: React.FC = () => {
         href={waUrl}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Chat WhatsApp Sawah Jaya Trans"
-        title="Chat WhatsApp Sawah Jaya Trans"
+        aria-label="Chat WhatsApp Surabaya EV Rent"
+        title="Chat WhatsApp Surabaya EV Rent"
         className="flex items-center justify-center w-12 h-12 sm:w-13 sm:h-13 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-emerald-300"
       >
         {/* Crisp WhatsApp Icon */}

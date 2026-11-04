@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Logo } from './Logo';
 import { LiveryDividerStripe, SectionTechPattern } from './EvLiveryDecals';
-import { ShieldCheck, Phone, MapPin, Clock } from 'lucide-react';
+import { ShieldCheck, Phone, MapPin, Clock, ArrowRight } from 'lucide-react';
 
 interface FooterProps {
   onNavigatePage: (page: string) => void;
@@ -44,12 +44,12 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mt-3 max-w-md">
-            Layanan sewa mobil listrik dengan driver dan taksi listrik di Jawa Timur bersama PT Sawah Jaya Trans.
+            Layanan sewa mobil listrik dengan driver dan taksi online mobil listrik modern di Surabaya, Sidoarjo, dan Malang Raya bersama Surabaya EV Rent (Powered by Smart Journey).
           </p>
 
-          <div className="flex items-center gap-2 text-xs text-brand-teal font-bold mt-2 bg-white/80 px-3 py-1 rounded-full border border-brand-teal/20">
+          <div className="flex items-center gap-2 text-xs text-brand-teal font-bold mt-2 bg-white/80 px-3 py-1 rounded-full border border-brand-teal/20 font-mono">
             <ShieldCheck className="w-4 h-4 shrink-0 text-brand-teal" />
-            <span>Pemesanan &amp; Pembayaran Digital Resmi</span>
+            <span>Pemesanan &amp; Pembayaran Digital Resmi Surabaya EV Rent</span>
           </div>
         </div>
 
@@ -58,25 +58,25 @@ export const Footer: React.FC<FooterProps> = ({
           
           {/* Kolom 1: Layanan Utama */}
           <div className="md:col-span-4 space-y-2.5">
-            <h5 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
               <span className="w-1.5 h-3 bg-brand-lime rounded-xs" />
               <span>Layanan Kami</span>
-            </h5>
+            </h4>
             <ul className="space-y-1.5 text-xs font-medium">
               <li>
                 <button
                   onClick={onOpenRental}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-0.5 block"
+                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 block"
                 >
-                  Rental Mobil Listrik (H-1)
+                  Rental Mobil Listrik dengan Driver (H-1)
                 </button>
               </li>
               <li>
                 <button
-                  onClick={onOpenTaxi}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-0.5 block"
+                  onClick={() => onNavigatePage('seo-taxi')}
+                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 block"
                 >
-                  Taksi Mobil Listrik (Rp7.000/km)
+                  Taksi Mobil Listrik (Tarif Rp7.000/km)
                 </button>
               </li>
               <li>
@@ -84,7 +84,7 @@ export const Footer: React.FC<FooterProps> = ({
                   onClick={() => {
                     document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-0.5 block"
+                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 block"
                 >
                   Paket Durasi 3, 5, 8, dan 12 Jam
                 </button>
@@ -92,38 +92,49 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Kolom 2: Wilayah Operasi */}
+          {/* Kolom 2: Wilayah Operasi & Landing Page Kota SEO */}
           <div className="md:col-span-4 space-y-2.5">
-            <h5 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
               <span className="w-1.5 h-3 bg-brand-teal rounded-xs" />
-              <span>Wilayah Operasi</span>
-            </h5>
+              <span>Wilayah Operasi &amp; Kota</span>
+            </h4>
             <ul className="space-y-1.5 text-xs font-medium">
               <li>
                 <button
                   onClick={() => onNavigatePage('seo-surabaya')}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-0.5 block"
+                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 flex items-center gap-1"
                 >
-                  Surabaya &amp; Sekitarnya
+                  <span>Rental Mobil Listrik Surabaya</span>
+                  <ArrowRight className="w-3 h-3 text-brand-teal" />
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigatePage('seo-sidoarjo')}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-0.5 block"
+                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 flex items-center gap-1"
                 >
-                  Sidoarjo &amp; Koridor Bisnis
+                  <span>Sewa Mobil Listrik Sidoarjo</span>
+                  <ArrowRight className="w-3 h-3 text-brand-teal" />
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigatePage('seo-malang')}
+                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 flex items-center gap-1"
+                >
+                  <span>Rental Mobil Listrik Malang &amp; Batu</span>
+                  <ArrowRight className="w-3 h-3 text-brand-teal" />
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Kolom 3: Kontak Cepat */}
+          {/* Kolom 3: Kontak Cepat Customer Care */}
           <div className="md:col-span-4 space-y-2.5">
-            <h5 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
               <span className="w-1.5 h-3 bg-brand-lime rounded-xs" />
               <span>Customer Care</span>
-            </h5>
+            </h4>
             <a
               href="https://wa.me/6282233697979?text=Halo%20kak%2C%20mau%20sewa%20mobil%20listriknya"
               target="_blank"
@@ -135,7 +146,7 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
               <div className="text-xs">
                 <span className="font-bold text-slate-900 block group-hover:text-emerald-700 transition-colors">WhatsApp Customer Care</span>
-                <span className="text-slate-600 font-semibold text-[11px]">0822-3369-7979</span>
+                <span className="text-slate-600 font-semibold text-[11px] font-mono">0822-3369-7979</span>
               </div>
             </a>
           </div>
@@ -146,16 +157,16 @@ export const Footer: React.FC<FooterProps> = ({
         <div className="py-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-600 border-b border-brand-teal/15">
           <div className="flex items-center gap-2 bg-white/70 p-2.5 rounded-xl border border-brand-teal/15">
             <MapPin className="w-3.5 h-3.5 text-brand-teal shrink-0" />
-            <span>Wilayah Operasional: <strong>Surabaya &amp; Sidoarjo</strong></span>
+            <span>Wilayah Operasional Resmi: <strong>Surabaya, Sidoarjo, dan Malang</strong></span>
           </div>
 
           <div className="flex items-center gap-2 bg-white/70 p-2.5 rounded-xl border border-brand-teal/15">
             <Clock className="w-3.5 h-3.5 text-brand-teal shrink-0" />
-            <span>Pemesanan Online: <strong>24 Jam via Website &amp; WhatsApp</strong></span>
+            <span>Pemesanan Online: <strong>24 Jam via Website &amp; WhatsApp Resmi</strong></span>
           </div>
         </div>
 
-        {/* Baris Bawah: Copyright PT. Sawah Jaya Trans & Powered by Smart Journey */}
+        {/* Baris Bawah: Copyright Identitas Legal & Powered by Smart Journey */}
         <div className="pt-5 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-2 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
             <span
@@ -163,10 +174,10 @@ export const Footer: React.FC<FooterProps> = ({
               className="select-none cursor-pointer hover:text-brand-primary transition-colors font-medium"
               title=""
             >
-              &copy; {new Date().getFullYear()} PT. Sawah Jaya Trans
+              &copy; {new Date().getFullYear()} PT. Sawah Jaya Trans · Surabaya EV Rent
             </span>
 
-            {/* Tombol Tersembunyi: Hanya muncul saat copyright diklik 10 sampai 13 kali. Pada klik ke-14 kembali semula */}
+            {/* Tombol Tersembunyi: Akses Admin Rahasia (10-13 klik, reset pada klik 14) */}
             {adminClicks >= 10 && adminClicks <= 13 && (
               <button
                 onClick={() => onNavigatePage('admin')}

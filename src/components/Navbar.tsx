@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Logo } from './Logo';
 import { LiveryDividerStripe } from './EvLiveryDecals';
-import { Menu, X, Car, Search, Zap, Clock } from 'lucide-react';
+import { Menu, X, Car, Search, Zap, MapPin, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
   onOpenRental: () => void;
@@ -20,6 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,6 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const scrollToSection = (sectionId: string) => {
     setMobileMenuOpen(false);
+    setCityDropdownOpen(false);
     if (currentPage !== 'home') {
       onNavigatePage('home');
       setTimeout(() => {
@@ -62,6 +64,12 @@ export const Navbar: React.FC<NavbarProps> = ({
     } else {
       document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleCityClick = (cityKey: string) => {
+    setMobileMenuOpen(false);
+    setCityDropdownOpen(false);
+    onNavigatePage(cityKey);
   };
 
   return (
@@ -87,8 +95,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Logo className="h-11 xs:h-12 sm:h-14 lg:h-16" showSubtitle={true} />
           </button>
 
-          {/* Desktop Navigation (Sederhana & Prioritas Rental, Taksi, Tarif) */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          {/* Desktop Navigation (Sederhana & Prioritas Rental, Taksi, Tarif, Kota) */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-7">
             <button
               onClick={() => scrollToSection('services-section')}
               className="text-sm font-bold text-slate-700 hover:text-brand-teal transition-colors cursor-pointer py-2"
@@ -101,6 +109,50 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               Paket &amp; Tarif
             </button>
+
+            {/* Dropdown Wilayah Kota SEO */}
+            <div className="relative">
+              <button
+                onClick={() => setCityDropdownOpen(!cityDropdownOpen)}
+                className="text-sm font-bold text-slate-700 hover:text-brand-teal transition-colors cursor-pointer py-2 inline-flex items-center gap-1"
+              >
+                <span>Kota Layanan</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${cityDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {cityDropdownOpen && (
+                <div
+                  className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-lg p-1.5 z-50 space-y-1"
+                  onMouseLeave={() => setCityDropdownOpen(false)}
+                >
+                  <button
+                    onClick={() => handleCityClick('seo-surabaya')}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-700 hover:bg-brand-mint hover:text-brand-teal rounded-lg transition-colors cursor-pointer"
+                  >
+                    Rental EV Surabaya
+                  </button>
+                  <button
+                    onClick={() => handleCityClick('seo-sidoarjo')}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-700 hover:bg-brand-mint hover:text-brand-teal rounded-lg transition-colors cursor-pointer"
+                  >
+                    Sewa EV Sidoarjo
+                  </button>
+                  <button
+                    onClick={() => handleCityClick('seo-malang')}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-700 hover:bg-brand-mint hover:text-brand-teal rounded-lg transition-colors cursor-pointer"
+                  >
+                    Rental EV Malang &amp; Batu
+                  </button>
+                  <button
+                    onClick={() => handleCityClick('seo-taxi')}
+                    className="w-full text-left px-3 py-2 text-xs font-bold text-slate-700 hover:bg-brand-mint hover:text-brand-teal rounded-lg transition-colors cursor-pointer"
+                  >
+                    Taksi Listrik (Rp7.000/km)
+                  </button>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => scrollToSection('why-us-section')}
               className="text-sm font-bold text-slate-700 hover:text-brand-teal transition-colors cursor-pointer py-2"
@@ -116,11 +168,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           {/* Right Action Buttons: Desktop & Laptop (1024px+) */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2.5">
             {/* Cek Booking Button */}
             <button
               onClick={onOpenTracker}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:text-brand-teal hover:bg-brand-mint rounded-xl border border-slate-200 transition-colors cursor-pointer min-h-[44px]"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-700 hover:text-brand-teal hover:bg-brand-mint rounded-xl border border-slate-200 transition-colors cursor-pointer min-h-[44px]"
               title="Lacak status booking dan info supir/kendaraan"
             >
               <Search className="w-4 h-4 text-brand-teal" />
@@ -130,10 +182,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Quick Taksi Button */}
             <button
               onClick={onOpenTaxi}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-bold text-brand-primary bg-brand-mint hover:bg-brand-teal-light border border-brand-teal/30 rounded-xl transition-all cursor-pointer min-h-[44px]"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-brand-primary bg-brand-mint hover:bg-brand-teal-light border border-brand-teal/30 rounded-xl transition-all cursor-pointer min-h-[44px]"
             >
               <Zap className="w-4 h-4 text-brand-teal fill-brand-teal" />
-              <span>Pesan Taksi</span>
+              <span>Taksi</span>
             </button>
 
             {/* Primary Action: Pesan Rental */}
@@ -214,7 +266,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onNavigatePage('home');
                   setMobileMenuOpen(false);
                 }}
-                className={`text-left px-3 py-3 text-sm font-bold rounded-lg min-h-[44px] flex items-center ${
+                className={`text-left px-3 py-2.5 text-sm font-bold rounded-lg min-h-[44px] flex items-center ${
                   currentPage === 'home' ? 'bg-brand-mint text-brand-teal' : 'text-brand-primary hover:bg-slate-50'
                 }`}
               >
@@ -223,28 +275,71 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               <button
                 onClick={() => scrollToSection('services-section')}
-                className="text-left px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
+                className="text-left px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
               >
-                Dua Layanan Utama (Rental &amp; Taksi)
+                Dua Layanan Utama
               </button>
 
               <button
                 onClick={() => scrollToSection('pricing-section')}
-                className="text-left px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
+                className="text-left px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
               >
-                Paket dan Tarif (3, 5, 8, 12 Jam)
+                Paket dan Tarif
               </button>
+
+              {/* Sub-menu Wilayah Kota */}
+              <div className="pt-2 pb-1 border-t border-slate-100">
+                <span className="px-3 text-[11px] font-black uppercase text-slate-400 tracking-wider block mb-1">
+                  Wilayah Layanan:
+                </span>
+                <button
+                  onClick={() => handleCityClick('seo-surabaya')}
+                  className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg flex items-center justify-between ${
+                    currentPage === 'seo-surabaya' ? 'bg-brand-mint text-brand-teal' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>Rental Mobil Listrik Surabaya</span>
+                  <MapPin className="w-3.5 h-3.5 text-brand-teal" />
+                </button>
+                <button
+                  onClick={() => handleCityClick('seo-sidoarjo')}
+                  className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg flex items-center justify-between ${
+                    currentPage === 'seo-sidoarjo' ? 'bg-brand-mint text-brand-teal' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>Sewa Mobil Listrik Sidoarjo</span>
+                  <MapPin className="w-3.5 h-3.5 text-brand-teal" />
+                </button>
+                <button
+                  onClick={() => handleCityClick('seo-malang')}
+                  className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg flex items-center justify-between ${
+                    currentPage === 'seo-malang' ? 'bg-brand-mint text-brand-teal' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>Rental Mobil Listrik Malang &amp; Batu</span>
+                  <MapPin className="w-3.5 h-3.5 text-brand-teal" />
+                </button>
+                <button
+                  onClick={() => handleCityClick('seo-taxi')}
+                  className={`w-full text-left px-3 py-2 text-xs font-bold rounded-lg flex items-center justify-between ${
+                    currentPage === 'seo-taxi' ? 'bg-brand-mint text-brand-teal' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span>Taksi Listrik (Rp7.000/km)</span>
+                  <Zap className="w-3.5 h-3.5 text-brand-teal" />
+                </button>
+              </div>
 
               <button
                 onClick={() => scrollToSection('why-us-section')}
-                className="text-left px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
+                className="text-left px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
               >
                 Mengapa Memilih Kami
               </button>
 
               <button
                 onClick={() => scrollToSection('reviews-section')}
-                className="text-left px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
+                className="text-left px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center"
               >
                 Ulasan Pelanggan
               </button>
@@ -254,7 +349,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setMobileMenuOpen(false);
                   onOpenTracker();
                 }}
-                className="text-left px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center gap-2"
+                className="text-left px-3 py-2.5 text-sm font-semibold text-slate-800 hover:bg-brand-mint hover:text-brand-teal rounded-lg min-h-[44px] flex items-center gap-2"
               >
                 <Search className="w-4 h-4 text-brand-teal" />
                 <span>Cek Status Booking</span>

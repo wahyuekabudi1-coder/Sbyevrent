@@ -114,7 +114,7 @@ export const CustomerReviews: React.FC = () => {
         {/* Info Google Reviews Transparan */}
         <div className="mt-8 text-center">
           <a
-            href="https://maps.google.com/?q=PT+Sawah+Jaya+Trans+Surabaya"
+            href="https://maps.google.com/?q=Surabaya+EV+Rent"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-700 hover:text-brand-teal bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition-all shadow-2xs cursor-pointer"
