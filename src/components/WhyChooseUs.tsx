@@ -1,156 +1,104 @@
 import React from 'react';
-import {
-  UserCheck,
-  Clock,
-  ShieldCheck,
-  Zap,
-  BatteryCharging,
-  ReceiptText,
-  Sparkles
-} from 'lucide-react';
+import { UserCheck, Zap, BatteryCharging, CheckCircle2 } from 'lucide-react';
 import { LiveryStripe, LiveryDividerStripe, SectionTechPattern } from './EvLiveryDecals';
 
-interface BadgeItem {
+interface AdvantageItem {
   id: string;
   title: string;
-  subtitle: string;
+  desc: string;
   icon: React.ComponentType<{ className?: string }>;
-  accentColor: string;
-  badgeBg: string;
-  borderAccent: string;
 }
 
 export const WhyChooseUs: React.FC = () => {
-  const badges: BadgeItem[] = [
+  const advantages: AdvantageItem[] = [
     {
       id: 'driver',
-      title: 'Pengemudi Rajin',
-      subtitle: 'Sopan & Berpengalaman',
-      icon: UserCheck,
-      accentColor: 'text-brand-teal',
-      badgeBg: 'bg-gradient-to-br from-brand-mint via-teal-50 to-emerald-50',
-      borderAccent: 'border-brand-teal/30 group-hover:border-brand-teal'
-    },
-    {
-      id: '24jam',
-      title: 'Servis 24 Jam',
-      subtitle: 'Siaga Setiap Saat',
-      icon: Clock,
-      accentColor: 'text-emerald-700',
-      badgeBg: 'bg-gradient-to-br from-emerald-50 via-teal-50 to-brand-mint',
-      borderAccent: 'border-emerald-200 group-hover:border-emerald-600'
-    },
-    {
-      id: 'protection',
-      title: 'Perlindungan',
-      subtitle: 'Asuransi & Aman',
-      icon: ShieldCheck,
-      accentColor: 'text-sky-700',
-      badgeBg: 'bg-gradient-to-br from-sky-50 via-teal-50 to-slate-50',
-      borderAccent: 'border-sky-200 group-hover:border-sky-600'
+      title: 'Driver Profesional',
+      desc: 'Pengemudi berseragam, sopan, dan berpengalaman mengemudikan armada mobil listrik.',
+      icon: UserCheck
     },
     {
       id: 'ev',
-      title: 'Mobil Listrik',
-      subtitle: '100% Bebas Emisi',
-      icon: Zap,
-      accentColor: 'text-brand-teal',
-      badgeBg: 'bg-gradient-to-br from-brand-mint via-lime-50 to-teal-50',
-      borderAccent: 'border-lime-300 group-hover:border-brand-teal'
+      title: '100% Mobil Listrik',
+      desc: 'Armada VinFast modern yang senyap, sejuk, bersih, dan bebas emisi gas buang.',
+      icon: Zap
     },
     {
       id: 'battery',
-      title: 'Baterai Penuh',
-      subtitle: 'Siap Langsung Jalan',
-      icon: BatteryCharging,
-      accentColor: 'text-emerald-600',
-      badgeBg: 'bg-gradient-to-br from-teal-50 via-emerald-50 to-lime-50',
-      borderAccent: 'border-teal-200 group-hover:border-emerald-600'
+      title: 'Baterai & Unit Siap Tempuh',
+      desc: 'Kendaraan selalu diperiksa rutin dengan kapasitas baterai prima sebelum penjemputan.',
+      icon: BatteryCharging
     },
     {
-      id: 'pricing',
-      title: 'Tarif Pasti',
-      subtitle: 'Tanpa Biaya Siluman',
-      icon: ReceiptText,
-      accentColor: 'text-brand-primary',
-      badgeBg: 'bg-gradient-to-br from-slate-50 via-brand-mint to-teal-50',
-      borderAccent: 'border-slate-300 group-hover:border-brand-primary'
+      id: 'booking',
+      title: 'Pemesanan Praktis',
+      desc: 'Reservasi digital mudah dengan konfirmasi instan serta pelacakan status booking online.',
+      icon: CheckCircle2
     }
   ];
 
   return (
     <section
-      id="about-section"
-      className="relative py-6 sm:py-8 lg:py-10 bg-gradient-to-b from-slate-50 via-brand-mint/20 to-white overflow-hidden"
+      id="why-us-section"
+      className="relative py-10 sm:py-14 bg-gradient-to-b from-slate-50 via-brand-mint/15 to-white overflow-hidden"
       aria-label="Mengapa Memilih Kami"
     >
       {/* Background Texture Decal */}
       <SectionTechPattern />
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Header dengan Ornamen Livery Tebal yang Ringkas */}
-        <div className="text-center max-w-xl mx-auto mb-4 sm:mb-6">
+        {/* Header Section */}
+        <div className="text-center max-w-xl mx-auto mb-8 sm:mb-10">
           <div className="inline-flex items-center gap-2 mb-1.5">
             <LiveryStripe variant="compact" />
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border-2 border-brand-teal/40 text-brand-teal text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-brand-lime" />
-              <span>Standar Layanan Resmi</span>
-            </div>
+            <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-brand-teal font-mono">
+              Keunggulan Layanan
+            </span>
             <LiveryStripe variant="compact" className="rotate-180" />
           </div>
 
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-brand-primary">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-brand-primary">
             MENGAPA MEMILIH KAMI?
           </h2>
 
-          {/* Underline Ornamen Balap */}
-          <div className="flex justify-center my-2">
-            <LiveryStripe variant="horizontal" />
-          </div>
-
-          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-lg mx-auto font-medium">
-            Kombinasi layanan terbaik dan armada terawat untuk perjalanan nyaman di Surabaya dan Sidoarjo.
+          <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-md mx-auto mt-2 font-medium">
+            Kenyamanan perjalanan terbaik bersama layanan transportasi listrik berstandar tinggi.
           </p>
         </div>
 
-        {/* 6 Badges: 3 di atas, 3 di bawah, ukuran ringkas & hemat tempat */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 max-w-4xl mx-auto">
-          {badges.map((b) => {
-            const Icon = b.icon;
+        {/* 4 Keunggulan: 4 Kolom di Desktop, 2 Kolom di Tablet, 1-2 di Mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          {advantages.map((item) => {
+            const Icon = item.icon;
 
             return (
               <div
-                key={b.id}
-                className={`group relative bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3.5 border-2 ${b.borderAccent} hover:shadow-md hover:border-brand-teal transition-all duration-200 flex flex-col sm:flex-row items-center sm:text-left text-center gap-2 sm:gap-3 cursor-default overflow-hidden`}
+                key={item.id}
+                className="group relative bg-white rounded-2xl p-5 border-2 border-slate-200 hover:border-brand-teal hover:shadow-md transition-all duration-200 flex flex-col justify-between shadow-xs overflow-hidden"
               >
-                {/* Top Corner Mini Stripe Accent */}
-                <div className="absolute top-0 right-0 w-6 h-6 pointer-events-none overflow-hidden">
-                  <div className="absolute transform rotate-45 bg-gradient-to-r from-brand-lime to-brand-teal w-8 h-1.5 top-1 -right-2 opacity-80" />
+                {/* Top Corner Mini Accent */}
+                <div className="absolute top-0 right-0 w-8 h-8 pointer-events-none overflow-hidden">
+                  <div className="absolute transform rotate-45 bg-gradient-to-r from-brand-lime to-brand-teal w-12 h-1 top-2 -right-3 opacity-80" />
                 </div>
 
-                {/* Icon Container Ringkas & Elegan */}
-                <div
-                  className={`w-9 h-9 sm:w-11 sm:h-11 rounded-xl ${b.badgeBg} border-2 border-brand-teal/20 group-hover:border-brand-teal group-hover:scale-105 transition-all duration-200 shadow-2xs flex items-center justify-center shrink-0`}
-                >
-                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${b.accentColor} stroke-[2.3]`} />
-                </div>
+                <div>
+                  {/* Icon */}
+                  <div className="w-11 h-11 rounded-xl bg-brand-mint text-brand-teal border border-brand-teal/20 group-hover:border-brand-teal group-hover:scale-105 transition-all duration-200 flex items-center justify-center mb-3.5 shadow-2xs">
+                    <Icon className="w-5 h-5 text-brand-teal stroke-[2.2]" />
+                  </div>
 
-                {/* Keterangan Teks Padat */}
-                <div className="min-w-0">
-                  <h3 className="text-[11px] sm:text-xs md:text-sm font-black text-brand-primary leading-tight group-hover:text-brand-teal transition-colors truncate">
-                    {b.title}
+                  {/* Title & Description (Maksimal satu kalimat) */}
+                  <h3 className="text-sm font-black text-brand-primary leading-tight group-hover:text-brand-teal transition-colors">
+                    {item.title}
                   </h3>
-                  <p className="mt-0.5 text-[9px] sm:text-[11px] font-bold text-slate-500 leading-tight truncate">
-                    {b.subtitle}
+                  <p className="mt-1.5 text-xs text-slate-600 leading-relaxed font-normal">
+                    {item.desc}
                   </p>
                 </div>
 
-                {/* Ornamen Garis Balap Mini di Dasar Kartu */}
-                <div className="absolute bottom-0 inset-x-0 h-1 flex opacity-60 group-hover:opacity-100 transition-opacity">
-                  <div className="w-1/2 bg-brand-lime" />
-                  <div className="w-1/2 bg-brand-teal" />
-                </div>
+                {/* Bottom Livery Line */}
+                <div className="mt-4 -mx-5 -mb-5 h-1 bg-gradient-to-r from-brand-lime to-brand-teal opacity-60 group-hover:opacity-100 transition-opacity" />
               </div>
             );
           })}
@@ -158,8 +106,8 @@ export const WhyChooseUs: React.FC = () => {
 
       </div>
 
-      {/* Garis Pembatas Section Tebal */}
-      <div className="mt-6 sm:mt-8">
+      {/* Garis Pembatas Section */}
+      <div className="mt-8 sm:mt-12">
         <LiveryDividerStripe />
       </div>
     </section>

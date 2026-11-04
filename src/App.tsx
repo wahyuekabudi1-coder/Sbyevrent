@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { WhyChooseUs } from './components/WhyChooseUs';
-import { VehicleFleet } from './components/VehicleFleet';
+import { MainServices } from './components/MainServices';
 import { ServicesAndPackages } from './components/ServicesAndPackages';
+import { WhyChooseUs } from './components/WhyChooseUs';
 import { CustomerReviews } from './components/CustomerReviews';
-import { NewsletterSubscription } from './components/NewsletterSubscription';
 import { Footer } from './components/Footer';
 import { RentalBookingModal } from './components/RentalBookingModal';
 import { TaxiBookingModal } from './components/TaxiBookingModal';
@@ -114,7 +113,6 @@ export default function App() {
             onOpenTaxi={city => handleOpenTaxi()}
           />
           <CustomerReviews />
-          <NewsletterSubscription />
         </main>
         <Footer
           onNavigatePage={setCurrentPage}
@@ -150,11 +148,11 @@ export default function App() {
     );
   }
 
-  // Default Home Page View
+  // Final Restructured Home Page View
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-sky-200">
       
-      {/* SECTION 1 — HEADER */}
+      {/* 1. HEADER / NAVBAR */}
       <Navbar
         currentPage={currentPage}
         onNavigatePage={setCurrentPage}
@@ -164,42 +162,40 @@ export default function App() {
       />
 
       <main className="flex-1">
-        {/* SECTION 2 — HERO */}
+        {/* 2. HERO / BANNER UTAMA */}
         <Hero
           onOpenRental={() => handleOpenRental()}
           onOpenTaxi={handleOpenTaxi}
         />
 
-        {/* SECTION 3 — WHY CHOOSE US */}
-        <WhyChooseUs />
-
-        {/* SECTION 4 — PILIHAN KENDARAAN (SLIDER KESAMPING & SPEK RINGKAS) */}
-        <VehicleFleet
-          onSelectVehicle={model => handleOpenRental({ model })}
+        {/* 3. DUA LAYANAN UTAMA */}
+        <MainServices
+          onOpenRental={() => handleOpenRental()}
+          onOpenTaxi={handleOpenTaxi}
         />
 
-        {/* SECTION 5 — PAKET RENTAL & DURASI (DENGAN DROPDOWN) */}
+        {/* 4. PAKET DAN TARIF */}
         <ServicesAndPackages
           pricingList={pricingList}
           onOpenRental={prefill => handleOpenRental(prefill)}
           onOpenTaxi={handleOpenTaxi}
         />
 
-        {/* SECTION 6 — ULASAN PELANGGAN GOOGLE (AUTO-SLIDE 3 DETIK) */}
-        <CustomerReviews />
+        {/* 5. MENGAPA MEMILIH KAMI */}
+        <WhyChooseUs />
 
-        {/* SECTION 7 — BERLANGGANAN INFO PROMO & DISKON */}
-        <NewsletterSubscription />
+        {/* 6. ULASAN PELANGGAN */}
+        <CustomerReviews />
       </main>
 
-      {/* FOOTER DAN IDENTITAS PERUSAHAAN */}
+      {/* 7. FOOTER */}
       <Footer
         onNavigatePage={setCurrentPage}
         onOpenRental={() => handleOpenRental()}
         onOpenTaxi={handleOpenTaxi}
       />
 
-      {/* MODALS */}
+      {/* MODALS PERSISTED (Rental, Taksi, Payment, Tracker) */}
       <RentalBookingModal
         isOpen={isRentalOpen}
         onClose={() => setIsRentalOpen(false)}

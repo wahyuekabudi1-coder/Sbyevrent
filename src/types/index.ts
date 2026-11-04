@@ -11,7 +11,7 @@ export interface SystemSettings {
 export interface RentalPricingItem {
   id: string;
   vehicle_model: 'VinFast VF 5' | 'VinFast VF e34';
-  city: 'Surabaya' | 'Sidoarjo';
+  city: 'Surabaya' | 'Sidoarjo' | 'Malang';
   duration_hours: number;
   km_limit: number;
   price: number;
@@ -24,12 +24,11 @@ export interface Vehicle {
   code: string;
   model: 'VinFast VF 5' | 'VinFast VF e34' | string;
   plate_number: string;
-  city: 'Surabaya' | 'Sidoarjo' | string;
+  city: 'Surabaya' | 'Sidoarjo' | 'Malang' | string;
   driver_name: string;
   driver_phone?: string;
   dedicated_driver_id?: string;
   dedicated_driver_name?: string;
-  image_url?: string;
   is_active: number;
   in_maintenance: number;
   notes?: string;
@@ -83,19 +82,8 @@ export interface Booking {
   expires_at?: string;
 }
 
-export interface AvailabilityItem {
-  total: number;
-  booked: number;
-  available: number;
-  imageUrl?: string;
-  startingPrice?: number;
-  category?: string;
-}
-
 export interface AvailabilitySummary {
   city: string;
   date: string;
-  inventory: Record<string, AvailabilityItem>;
-  modelImages?: Record<string, string>;
+  inventory: Record<string, { total: number; booked: number; available: number }>;
 }
-

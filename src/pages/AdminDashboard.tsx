@@ -356,7 +356,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackHome }) =>
             <div>
               <h2 className="text-xl font-bold text-slate-900">Portal Pengelola Admin</h2>
               <p className="text-xs text-slate-500">
-                Sawah Jaya Trans · Surabaya EV Rent
+                PT Sawah Jaya Trans · Surabaya EV Rent
               </p>
             </div>
           </div>
@@ -695,6 +695,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackHome }) =>
                       >
                         <option value="Surabaya">Surabaya</option>
                         <option value="Sidoarjo">Sidoarjo</option>
+                        <option value="Malang">Malang</option>
                       </select>
                     </div>
 
@@ -753,7 +754,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackHome }) =>
                       </label>
                       <input
                         type="text"
-                        placeholder="Contoh: Standby Surabaya Pusat"
+                        placeholder="Contoh: Standby Terminal 1 Bandara Juanda"
                         value={vehicleForm.notes}
                         onChange={e => setVehicleForm({ ...vehicleForm, notes: e.target.value })}
                         className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 min-h-[42px]"
@@ -801,6 +802,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackHome }) =>
                     <option value="Semua">Semua Kota</option>
                     <option value="Surabaya">Surabaya</option>
                     <option value="Sidoarjo">Sidoarjo</option>
+                    <option value="Malang">Malang</option>
                   </select>
 
                   <select
@@ -1061,6 +1063,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackHome }) =>
                   <option value="">Semua Kota</option>
                   <option value="Surabaya">Surabaya</option>
                   <option value="Sidoarjo">Sidoarjo</option>
+                  <option value="Malang">Malang</option>
                 </select>
                 <select
                   value={bookingFilterService}

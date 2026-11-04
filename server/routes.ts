@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from 'express';
+import express, { Request, Response } from 'express';
 import crypto from 'crypto';
 import { db } from './db.ts';
 
@@ -56,55 +56,6 @@ apiRouter.get('/pricing', (req: Request, res: Response) => {
   }
 });
 
-const DEFAULT_MODEL_IMAGES: Record<string, string> = {
-  'VinFast VF 5': 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&w=800&q=80',
-  'VinFast VF e34': 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80',
-};
-
-function getModelImages(): Record<string, string> {
-  try {
-    const vf5Row = db.prepare("SELECT value FROM system_settings WHERE key = 'model_image_VF5'").get() as { value: string } | undefined;
-    const vfe34Row = db.prepare("SELECT value FROM system_settings WHERE key = 'model_image_VFE34'").get() as { value: string } | undefined;
-    return {
-      'VinFast VF 5': vf5Row?.value?.trim() || DEFAULT_MODEL_IMAGES['VinFast VF 5'],
-      'VinFast VF e34': vfe34Row?.value?.trim() || DEFAULT_MODEL_IMAGES['VinFast VF e34'],
-    };
-  } catch {
-    return DEFAULT_MODEL_IMAGES;
-  }
-}
-
-// Public API untuk mengambil data visual model armada
-apiRouter.get('/fleet-models', (req: Request, res: Response) => {
-  const modelImages = getModelImages();
-  res.json({
-    success: true,
-    modelImages,
-    models: [
-      {
-        model: 'VinFast VF 5',
-        shortCode: 'VF 05',
-        category: 'Smart Compact Electric Crossover',
-        tagline: 'Lincah & Nyaman di Perkotaan',
-        description: 'Crossover listrik kompak dengan manuver gesit dan kabin senyap. Sangat ideal untuk perjalanan dinas, mobilitas harian dalam kota Surabaya, Sidoarjo, dan rute penghubung Jawa Timur.',
-        imageUrl: modelImages['VinFast VF 5'],
-        pricingHint: 'Mulai Rp240.000 / 3 Jam',
-        startingPrice: 240000
-      },
-      {
-        model: 'VinFast VF e34',
-        shortCode: 'VF e34',
-        category: 'Spacious Mid-Size Electric SUV',
-        tagline: 'Kabin Luas & Suspensi Lembut',
-        description: 'SUV listrik mid-size berdimensi lega dengan bagasi fleksibel dan suspensi empuk. Memberikan kenyamanan kelas atas untuk agenda keluarga, eksekutif, dan perjalanan dinas antarkota Surabaya - Sidoarjo.',
-        imageUrl: modelImages['VinFast VF e34'],
-        pricingHint: 'Mulai Rp290.000 / 3 Jam',
-        startingPrice: 290000
-      }
-    ]
-  });
-});
-
 // -------------------------------------------------------------
 // 2. AVAILABILITY ENGINE (H-1 Rule & Dynamic Fleet Count)
 // -------------------------------------------------------------
@@ -128,34 +79,15 @@ apiRouter.get('/availability', (req: Request, res: Response) => {
   }
 
   try {
-    const modelImages = getModelImages();
-
-    // Ambil harga terendah (3 Jam) per model untuk kota tersebut
-    const pricingRows = db.prepare(`
-      SELECT vehicle_model, MIN(price) as starting_price
-      FROM rental_pricing 
-      WHERE city = ? AND is_active = 1
-      GROUP BY vehicle_model
-    `).all(city) as { vehicle_model: string; starting_price: number }[];
-
-    const startingPrices: Record<string, number> = {
-      'VinFast VF 5': 240000,
-      'VinFast VF e34': 290000
-    };
-    for (const pr of pricingRows) {
-      if (pr.vehicle_model) {
-        startingPrices[pr.vehicle_model] = pr.starting_price;
-      }
-    }
-
     // Ambil semua armada aktif dan tidak sedang maintenance di kota tersebut
     const totalVehicles = db.prepare(`
-      SELECT id, model, city, image_url 
+      SELECT id, model, city 
       FROM vehicles 
       WHERE city = ? AND is_active = 1 AND in_maintenance = 0
-    `).all(city) as { id: string; model: string; city: string; image_url?: string }[];
+    `).all(city) as { id: string; model: string; city: string }[];
 
     // Ambil kendaraan yang SUDAH terbooking aktif pada tanggal tersebut
+    // Satu kendaraan hanya boleh menerima 1 booking per tanggal (rental)
     const bookedRows = db.prepare(`
       SELECT assigned_vehicle_id 
       FROM bookings 
@@ -169,42 +101,15 @@ apiRouter.get('/availability', (req: Request, res: Response) => {
     const bookedVehicleIds = new Set(bookedRows.map(b => b.assigned_vehicle_id));
 
     // Kelompokkan per tipe kendaraan (VinFast VF 5 dan VinFast VF e34)
-    const summary: Record<string, {
-      total: number;
-      booked: number;
-      available: number;
-      imageUrl: string;
-      startingPrice: number;
-      category: string;
-    }> = {
-      'VinFast VF 5': {
-        total: 0,
-        booked: 0,
-        available: 0,
-        imageUrl: modelImages['VinFast VF 5'],
-        startingPrice: startingPrices['VinFast VF 5'] || 240000,
-        category: 'Smart Compact Electric Crossover'
-      },
-      'VinFast VF e34': {
-        total: 0,
-        booked: 0,
-        available: 0,
-        imageUrl: modelImages['VinFast VF e34'],
-        startingPrice: startingPrices['VinFast VF e34'] || 290000,
-        category: 'Spacious Mid-Size Electric SUV'
-      }
+    // Sesuai aturan: JANGAN menampilkan nomor polisi atau identitas kendaraan spesifik ke publik
+    const summary: Record<string, { total: number; booked: number; available: number }> = {
+      'VinFast VF 5': { total: 0, booked: 0, available: 0 },
+      'VinFast VF e34': { total: 0, booked: 0, available: 0 }
     };
 
     for (const v of totalVehicles) {
       if (!summary[v.model]) {
-        summary[v.model] = {
-          total: 0,
-          booked: 0,
-          available: 0,
-          imageUrl: modelImages[v.model] || DEFAULT_MODEL_IMAGES['VinFast VF 5'],
-          startingPrice: startingPrices[v.model] || 240000,
-          category: v.model.includes('VF 5') ? 'Smart Compact Electric Crossover' : 'Spacious Mid-Size Electric SUV'
-        };
+        summary[v.model] = { total: 0, booked: 0, available: 0 };
       }
       summary[v.model].total += 1;
       if (bookedVehicleIds.has(v.id)) {
@@ -218,8 +123,7 @@ apiRouter.get('/availability', (req: Request, res: Response) => {
       success: true,
       city,
       date,
-      inventory: summary,
-      modelImages
+      inventory: summary
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -897,7 +801,7 @@ apiRouter.get('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) =
 });
 
 apiRouter.post('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) => {
-  const { code, model, plateNumber, city, driverName, driverPhone, inMaintenance, notes, imageUrl } = req.body;
+  const { code, model, plateNumber, city, driverName, driverPhone, inMaintenance, notes } = req.body;
   if (!model || !plateNumber || !city) {
     return res.status(400).json({ success: false, message: 'Model kendaraan, nomor plat, dan kota wajib diisi.' });
   }
@@ -907,16 +811,14 @@ apiRouter.post('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) 
   const cleanDriverName = driverName?.trim() || 'Driver Siaga';
   const cleanDriverPhone = driverPhone?.trim() || '-';
   const cleanPlate = plateNumber.trim().toUpperCase();
-  const modelImages = getModelImages();
-  const finalImageUrl = imageUrl?.trim() || modelImages[model] || DEFAULT_MODEL_IMAGES['VinFast VF 5'];
 
   try {
     db.prepare(`
-      INSERT INTO vehicles (id, code, model, plate_number, city, driver_name, driver_phone, in_maintenance, is_active, notes, image_url)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
-    `).run(id, generatedCode, model, cleanPlate, city, cleanDriverName, cleanDriverPhone, inMaintenance ? 1 : 0, notes || '', finalImageUrl);
+      INSERT INTO vehicles (id, code, model, plate_number, city, driver_name, driver_phone, in_maintenance, is_active, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
+    `).run(id, generatedCode, model, cleanPlate, city, cleanDriverName, cleanDriverPhone, inMaintenance ? 1 : 0, notes || '');
 
-    res.json({ success: true, message: 'Armada mobil beserta data driver dan foto berhasil didaftarkan.' });
+    res.json({ success: true, message: 'Armada mobil beserta data driver berhasil didaftarkan.' });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
   }
@@ -924,17 +826,13 @@ apiRouter.post('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) 
 
 apiRouter.put('/admin/vehicles/:id', checkAdminAuth, (req: Request, res: Response) => {
   const { id } = req.params;
-  const { code, model, plateNumber, city, driverName, driverPhone, inMaintenance, isActive, notes, imageUrl } = req.body;
+  const { code, model, plateNumber, city, driverName, driverPhone, inMaintenance, isActive, notes } = req.body;
 
   try {
-    const existing = db.prepare('SELECT model, image_url FROM vehicles WHERE id = ?').get(id) as any;
-    const modelImages = getModelImages();
-    const finalImageUrl = imageUrl !== undefined ? imageUrl?.trim() : (existing?.image_url || modelImages[model] || DEFAULT_MODEL_IMAGES['VinFast VF 5']);
-
     db.prepare(`
       UPDATE vehicles 
       SET code = ?, model = ?, plate_number = ?, city = ?, 
-          driver_name = ?, driver_phone = ?, in_maintenance = ?, is_active = ?, notes = ?, image_url = ?
+          driver_name = ?, driver_phone = ?, in_maintenance = ?, is_active = ?, notes = ?
       WHERE id = ?
     `).run(
       code,
@@ -946,88 +844,12 @@ apiRouter.put('/admin/vehicles/:id', checkAdminAuth, (req: Request, res: Respons
       inMaintenance ? 1 : 0,
       isActive !== undefined ? (isActive ? 1 : 0) : 1,
       notes || '',
-      finalImageUrl,
       id
     );
 
-    res.json({ success: true, message: 'Data mobil, driver, dan foto berhasil diperbarui.' });
+    res.json({ success: true, message: 'Data mobil dan driver berhasil diperbarui.' });
   } catch (error: any) {
     res.status(400).json({ success: false, message: error.message });
-  }
-});
-
-// Endpoint Manajemen Foto Model Kendaraan (VinFast VF 5 & VinFast VF e34)
-apiRouter.get('/admin/models/images', checkAdminAuth, (req: Request, res: Response) => {
-  try {
-    const images = getModelImages();
-    res.json({ success: true, data: images });
-  } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-apiRouter.post('/admin/models/image', checkAdminAuth, (req: Request, res: Response) => {
-  const { model, imageUrl } = req.body;
-  if (!model || !imageUrl) {
-    return res.status(400).json({ success: false, message: 'Nama model dan URL gambar wajib diisi.' });
-  }
-
-  const cleanUrl = imageUrl.trim();
-  const settingKey = model.includes('VF 5') ? 'model_image_VF5' : 'model_image_VFE34';
-
-  try {
-    db.prepare(`
-      INSERT INTO system_settings (key, value, updated_at) 
-      VALUES (?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
-    `).run(settingKey, cleanUrl);
-
-    // Update foto seluruh unit kendaraan dari model tersebut
-    db.prepare(`
-      UPDATE vehicles 
-      SET image_url = ? 
-      WHERE model = ?
-    `).run(cleanUrl, model);
-
-    res.json({
-      success: true,
-      message: `Foto resmi untuk ${model} berhasil diperbarui di seluruh sistem.`,
-      imageUrl: cleanUrl
-    });
-  } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-apiRouter.delete('/admin/models/image', checkAdminAuth, (req: Request, res: Response) => {
-  const model = (req.body?.model || req.query?.model) as string;
-  if (!model) {
-    return res.status(400).json({ success: false, message: 'Model kendaraan wajib ditentukan.' });
-  }
-
-  const settingKey = model.includes('VF 5') ? 'model_image_VF5' : 'model_image_VFE34';
-  const defaultUrl = DEFAULT_MODEL_IMAGES[model] || DEFAULT_MODEL_IMAGES['VinFast VF 5'];
-
-  try {
-    db.prepare(`
-      INSERT INTO system_settings (key, value, updated_at) 
-      VALUES (?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
-    `).run(settingKey, defaultUrl);
-
-    db.prepare(`
-      UPDATE vehicles 
-      SET image_url = ? 
-      WHERE model = ?
-    `).run(defaultUrl, model);
-
-    res.json({
-      success: true,
-      message: `Foto ${model} berhasil direset ke standar resmi.`,
-      imageUrl: defaultUrl
-    });
-  } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
   }
 });
 
