@@ -6,7 +6,7 @@ import { VehicleFleet } from './components/VehicleFleet';
 import { ServicesAndPackages } from './components/ServicesAndPackages';
 import { Footer } from './components/Footer';
 import { RentalBookingPage } from './pages/RentalBookingPage';
-import { TaxiBookingModal } from './components/TaxiBookingModal';
+import { TaxiBookingPage } from './pages/TaxiBookingPage';
 import { PaymentModal } from './components/PaymentModal';
 import { BookingTrackerModal } from './components/BookingTrackerModal';
 import { CitySeoPage } from './components/CitySeoPage';
@@ -73,8 +73,10 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handler ke Halaman Fix Taksi Booking (Bukan Modal/Jendela Mengambang)
   const handleOpenTaxi = () => {
-    setIsTaxiOpen(true);
+    setCurrentPage('taxi-booking');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenTrackerWithCode = (code: string) => {
@@ -128,6 +130,32 @@ export default function App() {
     );
   }
 
+  // Render Dedicated Fixed Taxi Booking Page (Bukan Jendela Mengambang)
+  if (currentPage === 'taxi-booking' || currentPage === 'taxi') {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
+        <TaxiBookingPage
+          onBackHome={() => setCurrentPage('home')}
+          onOpenPaymentModal={(bNum) => setPaymentBookingNumber(bNum)}
+          onOpenTracker={handleOpenTrackerWithCode}
+        />
+
+        <PaymentModal
+          isOpen={Boolean(paymentBookingNumber)}
+          bookingNumber={paymentBookingNumber}
+          onClose={() => setPaymentBookingNumber(null)}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
+
+        <BookingTrackerModal
+          isOpen={isTrackerOpen}
+          initialCode={trackerCode}
+          onClose={() => setIsTrackerOpen(false)}
+        />
+      </div>
+    );
+  }
+
   // Render SEO City Pages
   if (currentPage.startsWith('seo-')) {
     const cityKey = currentPage.replace('seo-', '') as 'surabaya' | 'sidoarjo' | 'taxi';
@@ -154,11 +182,6 @@ export default function App() {
           onOpenTaxi={handleOpenTaxi}
         />
 
-        <TaxiBookingModal
-          isOpen={isTaxiOpen}
-          onClose={() => setIsTaxiOpen(false)}
-          onSuccessBooking={(bNum) => setPaymentBookingNumber(bNum)}
-        />
         <PaymentModal
           isOpen={Boolean(paymentBookingNumber)}
           bookingNumber={paymentBookingNumber}
@@ -217,13 +240,7 @@ export default function App() {
         onOpenTaxi={handleOpenTaxi}
       />
 
-      {/* MODALS UNTUK TAKSI & PAYMENT */}
-      <TaxiBookingModal
-        isOpen={isTaxiOpen}
-        onClose={() => setIsTaxiOpen(false)}
-        onSuccessBooking={(bNum) => setPaymentBookingNumber(bNum)}
-      />
-
+      {/* PAYMENT & TRACKER MODALS */}
       <PaymentModal
         isOpen={Boolean(paymentBookingNumber)}
         bookingNumber={paymentBookingNumber}

@@ -61,6 +61,7 @@ export const api = {
     customerPhone: string;
     passengerCount?: number;
     notes?: string;
+    uniqueCode?: number;
   }) {
     const res = await fetch('/api/bookings/taxi', {
       method: 'POST',

@@ -43,7 +43,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [copiedAmount, setCopiedAmount] = useState<boolean>(false);
   
   // Custom QRIS & Proof State
-  const [activeQrisUrl, setActiveQrisUrl] = useState<string>('/assets/qris-official.svg');
+  const [activeQrisUrl, setActiveQrisUrl] = useState<string>('/assets/qris-official.jpeg');
   const [proofImage, setProofImage] = useState<string | null>(null);
   const [isUploadingQris, setIsUploadingQris] = useState<boolean>(false);
   const [qrisUploadSuccess, setQrisUploadSuccess] = useState<boolean>(false);
@@ -101,7 +101,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       if (data.secondsLeft !== undefined) {
         setTimeLeft(data.secondsLeft);
       }
-      if (data.paymentStatus === 'paid') {
+      if (
+        data.paymentStatus === 'paid' ||
+        data.paymentStatus === 'waiting_verification' ||
+        data.bookingStatus === 'waiting_admin_confirmation' ||
+        data.adminConfirmedAt ||
+        data.proofImageUrl
+      ) {
         setIsPaidSuccess(true);
       }
     } catch (err: any) {
@@ -162,12 +168,21 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     const reader = new FileReader();
     reader.onload = () => {
       setProofImage(reader.result as string);
+      setError(null);
     };
     reader.readAsDataURL(file);
   };
 
   const handleProcessPayment = async () => {
     if (!bookingNumber) return;
+
+    // Validasi: Wajib unggah bukti bayar QRIS
+    if (!proofImage) {
+      setError('Mohon lampirkan foto/screenshot bukti pembayaran QRIS Anda terlebih dahulu agar admin dapat mengonfirmasi transaksi.');
+      proofInputRef.current?.click();
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
 
@@ -177,7 +192,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         bookingNumber,
         paymentMethod: 'QRIS',
         transactionRef: trxRef,
-        proofImage: proofImage || undefined
+        proofImage: proofImage
       });
 
       // Reload fresh data to show full e-receipt
@@ -185,7 +200,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       setIsPaidSuccess(true);
       onPaymentSuccess(bookingNumber);
     } catch (err: any) {
-      setError(err.message || 'Gagal memproses pembayaran QRIS.');
+      setError(err.message || 'Gagal memproses pengiriman bukti pembayaran QRIS.');
     } finally {
       setIsProcessing(false);
     }
@@ -277,14 +292,25 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </span>
                 </div>
                 
-                {/* Stempel / Badge Lunas */}
+                {/* Stempel / Badge Status */}
                 <div className="text-left sm:text-right">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold border border-emerald-300 shadow-2xs">
-                    <CheckCircle className="w-4 h-4 text-emerald-700" />
-                    <span>PEMBAYARAN QRIS DITERIMA</span>
-                  </div>
+                  {booking?.adminConfirmedAt ? (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold border border-emerald-300 shadow-2xs">
+                      <CheckCircle className="w-4 h-4 text-emerald-700" />
+                      <span>PEMBAYARAN TERKONFIRMASI (LUNAS)</span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold border border-amber-300 shadow-2xs">
+                      <Clock className="w-4 h-4 text-amber-700 animate-pulse" />
+                      <span>MENUNGGU KONFIRMASI MANUAL ADMIN</span>
+                    </div>
+                  )}
                   <span className="text-[10px] text-slate-500 block mt-1">
-                    Status: <strong className="text-brand-teal">Menunggu Konfirmasi Admin</strong>
+                    {booking?.adminConfirmedAt ? (
+                      <span className="text-emerald-700 font-semibold">Diverifikasi Admin: {new Date(booking.adminConfirmedAt).toLocaleString('id-ID')}</span>
+                    ) : (
+                      <span>Bukti Diterima · Menunggu Pengecekan Mutasi</span>
+                    )}
                   </span>
                 </div>
               </div>
@@ -353,25 +379,51 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <strong className="text-brand-primary">{booking.bookingDate} · Pukul {booking.bookingTime} WIB</strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[11px]">Armada Kendaraan:</span>
-                    <strong className="text-brand-primary">{booking.vehicleModel}</strong>
+                    <span className="text-slate-500 block text-[11px]">Jenis Layanan:</span>
+                    <strong className="text-brand-primary">
+                      {booking.serviceType === 'taxi' ? 'Taksi Listrik (Point-to-Point)' : 'Rental Mobil Listrik (Harian)'}
+                    </strong>
                   </div>
                   <div>
-                    <span className="text-slate-500 block text-[11px]">Durasi Paket:</span>
-                    <strong className="text-brand-primary">Paket {booking.durationHours} Jam (Termasuk Driver &amp; Listrik)</strong>
+                    <span className="text-slate-500 block text-[11px]">
+                      {booking.serviceType === 'taxi' ? 'Rincian Jarak / Durasi:' : 'Durasi Paket:'}
+                    </span>
+                    <strong className="text-brand-primary">
+                      {booking.serviceType === 'taxi'
+                        ? `${booking.distanceKm || 0} km (Rp7.000/km)`
+                        : `Paket ${booking.durationHours} Jam (Termasuk Driver & Listrik)`}
+                    </strong>
                   </div>
                 </div>
+
+                {booking.serviceType === 'taxi' && (
+                  <div className="p-2 rounded-lg bg-amber-50 border border-amber-200/80 text-[10px] text-amber-900">
+                    <strong>Catatan:</strong> Tarif di atas <strong>tidak termasuk tol dan parkir</strong> (dibayar mandiri oleh penumpang jika melalui tol/tempat parkir).
+                  </div>
+                )}
 
                 <div className="pt-2 border-t border-brand-teal/15">
                   <span className="text-slate-500 block text-[11px]">Nama &amp; Kontak Pemesan:</span>
                   <strong className="text-brand-primary">{booking.customerName} ({booking.customerPhone})</strong>
                 </div>
 
-                <div className="pt-1">
-                  <span className="text-slate-500 block text-[11px]">Titik Alamat Penjemputan:</span>
-                  <p className="font-semibold text-slate-800 text-[11px] leading-relaxed">
-                    {booking.pickupAddress}
-                  </p>
+                <div className="pt-1 space-y-1">
+                  <div>
+                    <span className="text-slate-500 block text-[11px]">
+                      {booking.serviceType === 'taxi' ? 'Dari (Titik Penjemputan):' : 'Titik Alamat Penjemputan:'}
+                    </span>
+                    <p className="font-semibold text-slate-800 text-[11px] leading-relaxed">
+                      {booking.pickupAddress}
+                    </p>
+                  </div>
+                  {booking.serviceType === 'taxi' && booking.dropoffAddress && (
+                    <div>
+                      <span className="text-slate-500 block text-[11px]">Tujuan (Lokasi Pengantaran):</span>
+                      <p className="font-semibold text-slate-800 text-[11px] leading-relaxed">
+                        {booking.dropoffAddress}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -390,14 +442,47 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
               )}
 
-              {/* Keterangan Proses Selanjutnya oleh Admin */}
-              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 space-y-1">
-                <p className="font-bold flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                  <span>Proses Selanjutnya oleh Admin:</span>
-                </p>
-                <p className="text-amber-800 leading-relaxed">
-                  Bukti pemesanan dan pembayaran QRIS Anda telah tersimpan resmi di sistem. Admin kami akan segera memverifikasi mutasi rekening berdasarkan nominal tepat dengan kode unik <strong>+Rp{uniqueCode}</strong>. Setelah pembayaran terverifikasi OK, admin kami akan mengonfirmasi jadwal armada dan langsung melakukan follow up ke nomor WhatsApp Anda.
+              {/* Keterangan Proses Verifikasi Manual oleh Admin */}
+              <div className={`p-3.5 rounded-xl border text-[11px] space-y-1.5 ${
+                booking?.adminConfirmedAt 
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-950' 
+                  : 'bg-amber-50 border-amber-200 text-amber-900'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <p className="font-bold flex items-center gap-1.5">
+                    {booking?.adminConfirmedAt ? (
+                      <>
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>Pembayaran Telah Dikonfirmasi Manual oleh Admin</span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>Proses Konfirmasi Manual oleh Admin:</span>
+                      </>
+                    )}
+                  </p>
+                  {!booking?.adminConfirmedAt && (
+                    <button
+                      type="button"
+                      onClick={() => loadBookingDetails()}
+                      className="px-2 py-0.5 rounded bg-amber-200/70 hover:bg-amber-300 text-[10px] font-bold text-amber-900 transition-colors cursor-pointer"
+                      title="Periksa apakah admin sudah mengonfirmasi"
+                    >
+                      Cek Status Terkini
+                    </button>
+                  )}
+                </div>
+                <p className="leading-relaxed">
+                  {booking?.adminConfirmedAt ? (
+                    <span>
+                      Admin telah memverifikasi mutasi rekening dengan nominal tepat beserta kode unik <strong>+Rp{uniqueCode}</strong>. Armada dan driver resmi telah dijadwalkan. Admin akan segera menghubungi WhatsApp Anda untuk koordinasi teknis penjemputan.
+                    </span>
+                  ) : (
+                    <span>
+                      Bukti transfer QRIS Anda telah berhasil diunggah dan disimpan ke sistem. Admin kami sedang memverifikasi mutasi bank/settlement secara manual berdasarkan kode unik <strong>+Rp{uniqueCode}</strong>. Setelah dikonfirmasi, status pesanan otomatis terverifikasi dan admin langsung melakukan follow up via WhatsApp.
+                    </span>
+                  )}
                 </p>
               </div>
 
@@ -542,10 +627,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               )}
 
               {/* Gambar QRIS Utama */}
-              <div className="max-w-[280px] sm:max-w-[320px] mx-auto bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-md">
+              <div className="max-w-[290px] sm:max-w-[340px] mx-auto bg-white p-2.5 rounded-2xl border-2 border-slate-200 shadow-md">
                 <img
                   src={activeQrisUrl}
-                  alt="QRIS Resmi SURABAYA EV RENT"
+                  alt="QRIS Resmi OTI*SMART JOURNEY"
                   className="w-full h-auto rounded-xl object-contain mx-auto"
                 />
               </div>
@@ -553,29 +638,32 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               {/* Instruksi Scan */}
               <div className="space-y-1">
                 <div className="text-xs font-bold text-slate-900">
-                  SURABAYA EV RENT · PT SAWAH JAYA TRANS
+                  OTI*SMART JOURNEY · PT SAWAH JAYA TRANS
+                </div>
+                <div className="text-[11px] font-mono text-brand-teal font-semibold">
+                  NMID: ID1026537255642
                 </div>
                 <p className="text-[11px] text-slate-600 max-w-md mx-auto leading-relaxed">
-                  Buka aplikasi mobile banking (<strong>BCA, Mandiri, BRI, BNI</strong>) atau dompet digital (<strong>GoPay, OVO, ShopeePay, DANA</strong>), lalu scan barcode QRIS di atas dan bayar tepat <strong>Rp{totalAmount.toLocaleString('id-ID')}</strong>.
+                  Buka aplikasi mobile banking (<strong>BCA, Mandiri, BRI, BNI</strong>) atau e-wallet (<strong>GoPay, OVO, ShopeePay, DANA</strong>), lalu scan barcode QRIS resmi di atas dan bayar tepat <strong>Rp{totalAmount.toLocaleString('id-ID')}</strong>.
                 </p>
               </div>
 
             </div>
 
-            {/* Lampirkan Bukti Transfer (Opsional / Dianjurkan) */}
+            {/* Lampirkan Bukti Transfer (Wajib diunggah pelanggan) */}
             <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                   <ImageIcon className="w-4 h-4 text-brand-teal" />
-                  <span>Lampirkan Struk / Bukti Bayar (Opsional):</span>
+                  <span>Unggah Bukti Pembayaran QRIS (Wajib):</span>
                 </label>
                 {proofImage && (
                   <button
                     type="button"
                     onClick={() => setProofImage(null)}
-                    className="text-[10px] text-rose-600 hover:underline cursor-pointer"
+                    className="text-[10px] text-rose-600 hover:underline cursor-pointer font-semibold"
                   >
-                    Hapus Bukti
+                    Ganti Bukti
                   </button>
                 )}
               </div>
@@ -589,54 +677,56 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               />
 
               {proofImage ? (
-                <div className="flex items-center gap-3 p-2 bg-white rounded-lg border border-slate-200">
+                <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-emerald-300 shadow-2xs">
                   <img
                     src={proofImage}
                     alt="Preview Bukti"
-                    className="w-12 h-12 object-cover rounded-md border border-slate-200"
+                    className="w-14 h-14 object-cover rounded-md border border-slate-200 shadow-xs"
                   />
                   <div className="flex-1 text-[11px]">
-                    <span className="font-bold text-emerald-700 block flex items-center gap-1">
-                      <CheckCircle className="w-3.5 h-3.5" /> Bukti transfer terlampir
+                    <span className="font-bold text-emerald-800 block flex items-center gap-1">
+                      <CheckCircle className="w-3.5 h-3.5 text-emerald-600" /> Bukti Pembayaran Siap Dikirim
                     </span>
-                    <span className="text-slate-400">Siap dikirim bersama konfirmasi</span>
+                    <span className="text-slate-500 text-[10px] block mt-0.5">
+                      Akan diverifikasi manual oleh admin dengan mutasi bank
+                    </span>
                   </div>
                 </div>
               ) : (
                 <button
                   type="button"
                   onClick={() => proofInputRef.current?.click()}
-                  className="w-full py-2 px-3 border border-dashed border-slate-300 hover:border-brand-teal rounded-lg bg-white text-xs font-semibold text-slate-600 hover:text-brand-teal transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 px-3 border-2 border-dashed border-brand-teal/40 hover:border-brand-teal rounded-xl bg-white text-xs font-bold text-brand-teal hover:bg-brand-mint/20 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-2xs min-h-[46px]"
                 >
-                  <Upload className="w-3.5 h-3.5 text-brand-teal" />
-                  <span>Upload Screenshot / Struk Pembayaran</span>
+                  <Upload className="w-4 h-4 text-brand-teal" />
+                  <span>Pilih / Upload Struk / Bukti Bayar QRIS</span>
                 </button>
               )}
             </div>
 
-            {/* Tombol Eksekusi: Konfirmasi Saya Sudah Bayar */}
+            {/* Tombol Eksekusi: Kirim Bukti & Minta Konfirmasi Admin */}
             <div className="pt-2 space-y-2">
               <button
                 type="button"
                 onClick={handleProcessPayment}
                 disabled={isProcessing}
-                className="w-full py-4 px-4 font-black text-sm text-white bg-brand-teal hover:bg-brand-teal-hover rounded-xl shadow-xs hover:shadow-sm cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-4 px-4 font-black text-sm text-white bg-brand-teal hover:bg-brand-teal-hover rounded-xl shadow-xs hover:shadow-sm cursor-pointer transition-all flex items-center justify-center gap-2 disabled:opacity-50 min-h-[48px]"
               >
                 {isProcessing ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-brand-lime" />
-                    <span>Menerbitkan E-Receipt Resmi...</span>
+                    <span>Mengirim Bukti & Menerbitkan E-Receipt...</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4 text-brand-lime" />
-                    <span>Konfirmasi Saya Sudah Bayar via QRIS</span>
+                    <span>Kirim Bukti Pembayaran &amp; Minta Konfirmasi Admin</span>
                   </>
                 )}
               </button>
 
-              <p className="text-center text-[10px] text-slate-500">
-                Setelah tombol diklik, E-Receipt resmi diterbitkan dan pesanan langsung masuk ke antrean verifikasi admin untuk di-follow up.
+              <p className="text-center text-[10px] text-slate-500 leading-relaxed">
+                Setelah bukti dikirim, E-Receipt resmi diterbitkan dan pesanan langsung masuk antrean untuk diverifikasi manual oleh admin sebelum armada diberangkatkan.
               </p>
             </div>
 

@@ -114,8 +114,7 @@ export function initDatabase() {
       total_amount INTEGER NOT NULL,
       payment_method TEXT,
       payment_status TEXT DEFAULT 'pending', -- 'pending' | 'paid' | 'failed' | 'expired' | 'refunded'
-      artopay_transaction_id TEXT,
-      artopay_payment_url TEXT,
+      transaction_ref TEXT,
       paid_at DATETIME,
       expires_at DATETIME, -- Kunci sementara dilepas jika lewat waktu
       
@@ -189,15 +188,17 @@ export function initDatabase() {
   try {
     db.prepare('ALTER TABLE bookings ADD COLUMN proof_image_url TEXT').run();
   } catch (e) {}
-
-  // Pastikan qris_image_url ada di system_settings
   try {
-    const qrisRow = db.prepare("SELECT value FROM system_settings WHERE key = 'qris_image_url'").get() as { value: string } | undefined;
-    if (!qrisRow) {
-      db.prepare("INSERT INTO system_settings (key, value) VALUES ('qris_image_url', '/assets/qris-official.svg')").run();
-    } else if (qrisRow.value === '/assets/qris-official.png') {
-      db.prepare("UPDATE system_settings SET value = '/assets/qris-official.svg' WHERE key = 'qris_image_url'").run();
-    }
+    db.prepare('ALTER TABLE bookings ADD COLUMN transaction_ref TEXT').run();
+  } catch (e) {}
+
+  // Pastikan qris_image_url mengarah ke QRIS resmi asli pengguna
+  try {
+    db.prepare(`
+      INSERT INTO system_settings (key, value, updated_at) 
+      VALUES ('qris_image_url', '/assets/qris-official.jpeg', CURRENT_TIMESTAMP)
+      ON CONFLICT(key) DO UPDATE SET value = '/assets/qris-official.jpeg', updated_at = CURRENT_TIMESTAMP
+    `).run();
   } catch (e) {}
 }
 

@@ -22,11 +22,11 @@ const POPULAR_POINTS: Record<'Surabaya' | 'Sidoarjo', Array<{ name: string; addr
     { name: 'Galaxy Mall', address: 'Galaxy Mall Surabaya, Jl. Dharmahusada Indah Timur No.35-37, Mulyorejo, Surabaya', lat: -7.2751, lng: 112.7818 },
   ],
   Sidoarjo: [
-    { name: 'Bandara Juanda (T1/T2)', address: 'Bandara Internasional Juanda, Jl. Ir. H. Juanda, Betro, Sedati, Sidoarjo', lat: -7.3798, lng: 112.7875 },
-    { name: 'Stasiun Sidoarjo Kota', address: 'Stasiun Sidoarjo, Jl. Pahlawan No.1, Lemahputro, Sidoarjo', lat: -7.4567, lng: 112.7132 },
     { name: 'Alun-Alun Sidoarjo', address: 'Alun-Alun Sidoarjo, Jl. Cokronegoro, Sidokumpul, Sidoarjo', lat: -7.4478, lng: 112.7178 },
-    { name: 'Lippo Plaza Sidoarjo', address: 'Lippo Plaza Sidoarjo, Jl. Jati Raya No.1, Jati, Sidoarjo', lat: -7.4529, lng: 112.7058 },
+    { name: 'Stasiun Sidoarjo Kota', address: 'Stasiun Sidoarjo, Jl. Pahlawan No.1, Lemahputro, Sidoarjo', lat: -7.4567, lng: 112.7132 },
     { name: 'Terminal Purabaya Bungurasih', address: 'Terminal Purabaya, Jl. Letjend Sutoyo, Bungurasih, Waru, Sidoarjo', lat: -7.3533, lng: 112.7246 },
+    { name: 'Lippo Plaza Sidoarjo', address: 'Lippo Plaza Sidoarjo, Jl. Jati Raya No.1, Jati, Sidoarjo', lat: -7.4529, lng: 112.7058 },
+    { name: 'Pasar Larangan Sidoarjo', address: 'Pasar Larangan, Jl. Sunandar Priyo Sudarmo, Larangan, Candi, Sidoarjo', lat: -7.4682, lng: 112.7161 },
   ]
 };
 

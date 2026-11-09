@@ -91,11 +91,6 @@ Konfigurasikan variabel berikut di file `.env` (lokal) atau pada menu **Settings
 | `ADMIN_DEFAULT_PASSWORD` | Opsional | Password/PIN awal admin dashboard (default: `admin2026`) |
 | `ADMIN_PIN` | Opsional | Alias PIN admin cadangan |
 | `VITE_API_URL` | Opsional | URL backend eksternal (kosongkan jika menggunakan serverless di domain yang sama) |
-| `ARTOPAY_MERCHANT_ID` | Produksi | Merchant ID resmi dari akun ArtoPay Anda |
-| `ARTOPAY_API_KEY` | Produksi | API Key resmi dari payment gateway ArtoPay |
-| `ARTOPAY_SECRET_KEY` | Produksi | Secret Key untuk validasi signature webhook ArtoPay |
-| `ARTOPAY_BASE_URL` | Opsional | URL endpoint gateway ArtoPay (default: `https://api.artopay.id`) |
-| `ARTOPAY_SANDBOX_MODE` | Opsional | Atur `true` untuk mode simulasi, atau `false` untuk live payment |
 | `PORT` | Opsional | Port server development (default: `3000`) |
 | `NODE_ENV` | Otomatis | Lingkungan runtime (`development` atau `production`) |
 

@@ -17,8 +17,8 @@ const CITY_SEO_DATA = {
     badge: 'Kota Metropolitan & Bisnis Jawa Timur',
     highlights: [
       {
-        title: 'Antar Jemput Bandara Juanda & CBD',
-        desc: 'Layanan tepat waktu untuk penjemputan eksekutif di Bandara Internasional Juanda menuju kawasan segitiga emas Surabaya (Basuki Rachmat, Mayjen Sungkono, HR Muhammad).'
+        title: 'Antar Jemput Pusat Kota & CBD',
+        desc: 'Layanan tepat waktu untuk penjemputan eksekutif menuju kawasan segitiga emas Surabaya (Basuki Rachmat, Mayjen Sungkono, HR Muhammad).'
       },
       {
         title: 'Bebas Khawatir Efisiensi Perkotaan',
@@ -33,10 +33,10 @@ const CITY_SEO_DATA = {
     vehicleList: ['VinFast VF 5 (Compact EV Crossover)', 'VinFast VF e34 (Spacious SUV)']
   },
   sidoarjo: {
-    title: 'Rental Mobil Listrik Sidoarjo — Mobilitas Industri & Bandara',
+    title: 'Rental Mobil Listrik Sidoarjo — Mobilitas Industri & Niaga',
     metaTitle: 'Surabaya EV Rent - Rental Mobil Listrik Sidoarjo',
     description:
-      'Sewa mobil listrik di Sidoarjo untuk kunjungan kawasan industri Berbek, Rungkut Industri, Jabon, serta drop-off cepat ke Terminal Purabaya dan Bandara Juanda bersama Surabaya EV Rent.',
+      'Sewa mobil listrik di Sidoarjo untuk kunjungan kawasan industri Berbek, Rungkut Industri, Jabon, serta mobilitas cepat ke Terminal Purabaya bersama Surabaya EV Rent.',
     badge: 'Kawasan Penyangga & Koridor Logistik',
     highlights: [
       {
@@ -44,8 +44,8 @@ const CITY_SEO_DATA = {
         desc: 'Sangat cocok untuk kunjungan kerja, audit pabrik, dan inspeksi kawasan pergudangan di Waru, Gedangan, Buduran, hingga Porong.'
       },
       {
-        title: 'Lokasi Strategis Gerbang Bandara Juanda',
-        desc: 'Jarak dekat dengan T1 dan T2 Juanda memastikan armada kami selalu siaga menjemput tamu perusahaan Anda tanpa jeda keterlambatan.'
+        title: 'Lokasi Strategis Koridor Surabaya - Sidoarjo',
+        desc: 'Armada kami selalu siaga menjemput pelanggan dan tamu perusahaan Anda dengan tepat waktu tanpa jeda keterlambatan.'
       },
       {
         title: 'Perjalanan Wisata & Kuliner Delta',

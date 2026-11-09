@@ -131,7 +131,7 @@ apiRouter.get('/availability', (req: Request, res: Response) => {
 });
 
 // -------------------------------------------------------------
-// 3. BOOKING ENGINE (Atomic Locking & ArtoPay Integration)
+// 3. BOOKING ENGINE (Atomic Locking & QRIS Direct)
 // -------------------------------------------------------------
 
 apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
@@ -243,13 +243,13 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
         vehicle_model, duration_hours, km_limit, assigned_vehicle_id,
         pickup_address, dropoff_address, customer_name, customer_phone,
         passenger_count, notes, total_amount, unique_code, payment_status,
-        booking_status, assigned_driver_id, expires_at, artopay_payment_url
+        booking_status, assigned_driver_id, expires_at
       ) VALUES (
         ?, ?, 'rental', ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?, 'pending',
-        'pending_payment', ?, ?, ?
+        'pending_payment', ?, ?
       )
     `).run(
       bookingId,
@@ -270,8 +270,7 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
       totalAmount,
       uniqueCode,
       availableVehicle.dedicated_driver_id || null,
-      expiresAt,
-      paymentUrl
+      expiresAt
     );
 
     return {
@@ -333,7 +332,9 @@ apiRouter.post('/bookings/taxi', (req: Request, res: Response) => {
   const minFare = minFareRow ? parseInt(minFareRow.value, 10) : 25000;
 
   const rawFare = Math.ceil(Number(distanceKm) * ratePerKm);
-  const totalAmount = Math.max(minFare, rawFare);
+  const baseFare = Math.max(minFare, rawFare);
+  const uniqueCode = Number(req.body.uniqueCode) || Math.floor(100 + Math.random() * 899);
+  const totalAmount = baseFare + uniqueCode;
 
   const dateVal = bookingDate || getLocalDateString(0);
   const dateCompact = dateVal.replace(/-/g, '');
@@ -348,14 +349,12 @@ apiRouter.post('/bookings/taxi', (req: Request, res: Response) => {
         id, booking_number, service_type, city, booking_date, booking_time,
         pickup_address, dropoff_address, pickup_lat, pickup_lng, dropoff_lat, dropoff_lng,
         distance_km, taxi_rate_per_km, customer_name, customer_phone,
-        passenger_count, notes, total_amount, payment_status, booking_status,
-        artopay_payment_url
+        passenger_count, notes, total_amount, unique_code, payment_status, booking_status
       ) VALUES (
         ?, ?, 'taxi', ?, ?, ?,
         ?, ?, ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, ?, ?, 'pending', 'pending_payment',
-        ?
+        ?, ?, ?, ?, 'pending', 'pending_payment'
       )
     `).run(
       bookingId,
@@ -376,7 +375,7 @@ apiRouter.post('/bookings/taxi', (req: Request, res: Response) => {
       pCount,
       notes || '',
       totalAmount,
-      paymentUrl
+      uniqueCode
     );
 
     res.json({
@@ -396,7 +395,7 @@ apiRouter.post('/bookings/taxi', (req: Request, res: Response) => {
 });
 
 // -------------------------------------------------------------
-// 5. ARTOPAY PAYMENT VERIFICATION & SIMULATION
+// 5. QRIS PAYMENT VERIFICATION & ENGINE
 // -------------------------------------------------------------
 
 // Ambil status & data checkout untuk layar pembayaran
@@ -427,9 +426,9 @@ apiRouter.get('/payment/:bookingNumber', (req: Request, res: Response) => {
       secondsLeft = Math.max(0, diff);
     }
 
-    // Ambil gambar QRIS aktif dari database (bisa SVG default atau gambar asli yang diupload user/admin)
+    // Ambil gambar QRIS aktif dari database (gambar asli yang diupload)
     const qrisRow = db.prepare("SELECT value FROM system_settings WHERE key = 'qris_image_url'").get() as { value: string } | undefined;
-    const qrisImageUrl = qrisRow?.value || '/assets/qris-official.svg';
+    const qrisImageUrl = qrisRow?.value || '/assets/qris-official.jpeg';
 
     res.json({
       success: true,
@@ -453,6 +452,7 @@ apiRouter.get('/payment/:bookingNumber', (req: Request, res: Response) => {
         paymentMethod: booking.payment_method || 'QRIS',
         paidAt: booking.paid_at,
         adminConfirmedAt: booking.admin_confirmed_at,
+        adminNotes: booking.admin_notes || null,
         proofImageUrl: booking.proof_image_url || null,
         qrisImageUrl,
         paymentStatus: booking.payment_status,
@@ -467,7 +467,7 @@ apiRouter.get('/payment/:bookingNumber', (req: Request, res: Response) => {
   }
 });
 
-// Verifikasi / Eksekusi Pembayaran QRIS Langsung
+// Verifikasi / Eksekusi Pengunggahan Bukti Pembayaran QRIS dari Pelanggan
 apiRouter.post('/payment/process', (req: Request, res: Response) => {
   const { bookingNumber, paymentMethod, transactionRef, proofImage } = req.body;
 
@@ -481,10 +481,6 @@ apiRouter.post('/payment/process', (req: Request, res: Response) => {
       return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan.' });
     }
 
-    if (booking.payment_status === 'paid') {
-      return res.json({ success: true, message: 'Pesanan ini sudah dibayar sebelumnya.', alreadyPaid: true });
-    }
-
     if (booking.payment_status === 'expired' || booking.booking_status === 'cancelled') {
       return res.status(400).json({ success: false, message: 'Sesi pembayaran ini telah kedaluwarsa. Silakan lakukan pemesanan ulang.' });
     }
@@ -492,18 +488,22 @@ apiRouter.post('/payment/process', (req: Request, res: Response) => {
     const now = new Date().toISOString();
     const qrisTrxId = transactionRef || `QRIS-${Date.now()}-${booking.unique_code || Math.floor(100 + Math.random() * 899)}`;
 
+    // Jika admin sudah mengonfirmasi sebelumnya, pertahankan status 'paid' & 'confirmed'
+    const newPaymentStatus = booking.admin_confirmed_at ? 'paid' : 'waiting_verification';
+    const newBookingStatus = booking.admin_confirmed_at ? 'confirmed' : 'waiting_admin_confirmation';
+
     // Update pembayaran & booking status secara atomik
     db.prepare(`
       UPDATE bookings 
-      SET payment_status = 'paid',
+      SET payment_status = ?,
           payment_method = ?,
-          artopay_transaction_id = ?,
+          transaction_ref = ?,
           proof_image_url = COALESCE(?, proof_image_url),
-          booking_status = 'confirmed',
-          paid_at = ?,
+          booking_status = ?,
+          paid_at = COALESCE(paid_at, ?),
           updated_at = ?
       WHERE booking_number = ?
-    `).run(paymentMethod || 'QRIS', qrisTrxId, proofImage || null, now, now, bookingNumber);
+    `).run(newPaymentStatus, paymentMethod || 'QRIS', qrisTrxId, proofImage || null, newBookingStatus, now, now, bookingNumber);
 
     // Catat log audit
     db.prepare(`
@@ -511,17 +511,18 @@ apiRouter.post('/payment/process', (req: Request, res: Response) => {
       VALUES (?, ?, ?, ?)
     `).run(
       `LOG-${crypto.randomUUID()}`,
-      'QRIS Payment',
-      'PAYMENT_CONFIRMED',
-      `Booking ${bookingNumber} berhasil dibayar via QRIS sebesar Rp${booking.total_amount.toLocaleString('id-ID')} (Kode Unik: ${booking.unique_code})`
+      'Pelanggan QRIS',
+      'PROOF_SUBMITTED',
+      `Booking ${bookingNumber} telah mengunggah bukti bayar QRIS Rp${booking.total_amount.toLocaleString('id-ID')} (Kode Unik: ${booking.unique_code}), menunggu konfirmasi manual admin`
     );
 
     res.json({
       success: true,
-      message: 'Pembayaran QRIS berhasil disimpan. E-Receipt resmi telah diterbitkan.',
+      message: 'Bukti pembayaran berhasil dikirim. Pembayaran Anda sedang menunggu konfirmasi manual oleh admin.',
       data: {
         bookingNumber,
-        status: 'confirmed',
+        status: newBookingStatus,
+        paymentStatus: newPaymentStatus,
         paidAt: now,
         transactionId: qrisTrxId
       }
@@ -582,44 +583,6 @@ apiRouter.post('/settings/upload-qris', (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// ArtoPay Webhook Endpoint Resmi (HMAC-SHA256 & Idempotency)
-apiRouter.post('/webhook/artopay', (req: Request, res: Response) => {
-  const secretKey = process.env.ARTOPAY_SECRET_KEY || 'artopay_secret_live_example';
-  const signature = req.headers['x-artopay-signature'] as string;
-  const payload = req.body;
-
-  // Verifikasi Idempotency
-  const eventId = payload.eventId || payload.transactionId || `TRX-${Date.now()}`;
-  const existingEvent = db.prepare('SELECT id FROM webhook_logs WHERE reference_id = ?').get(eventId);
-  if (existingEvent) {
-    return res.status(200).json({ success: true, message: 'Event already processed.' });
-  }
-
-  try {
-    const { orderId, amount, status } = payload;
-    if (status === 'SUCCESS' || status === 'PAID') {
-      const now = new Date().toISOString();
-      db.prepare(`
-        UPDATE bookings 
-        SET payment_status = 'paid',
-            booking_status = 'confirmed',
-            paid_at = ?,
-            updated_at = ?
-        WHERE booking_number = ?
-      `).run(now, now, orderId);
-    }
-
-    db.prepare(`
-      INSERT INTO webhook_logs (id, reference_id, event_type, payload, is_success)
-      VALUES (?, ?, ?, ?, 1)
-    `).run(`WH-${crypto.randomUUID()}`, eventId, payload.eventType || 'PAYMENT_STATUS', JSON.stringify(payload));
-
-    res.json({ success: true, message: 'Webhook processed.' });
-  } catch (err: any) {
-    res.status(500).json({ success: false, message: err.message });
   }
 });
 

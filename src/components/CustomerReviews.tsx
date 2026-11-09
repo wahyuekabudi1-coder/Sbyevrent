@@ -32,7 +32,7 @@ export const CustomerReviews: React.FC = () => {
     },
     {
       id: 3,
-      authorTitle: 'Pengguna Perjalanan Bandara & Bisnis',
+      authorTitle: 'Pengguna Mobilitas Perkantoran & Bisnis',
       category: 'Taksi Mobil Listrik',
       location: 'Surabaya - Sidoarjo',
       initials: 'KP',
