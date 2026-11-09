@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560">
+  <defs>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#DE1D24" />
+      <stop offset="100%" stop-color="#B30E14" />
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.1" />
+    </filter>
+  </defs>
+
+  <!-- Card Background -->
+  <rect x="5" y="5" width="390" height="550" rx="20" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" filter="url(#cardShadow)" />
+
+  <!-- QRIS Header Strip -->
+  <path d="M 5 25 Q 5 5 25 5 L 375 5 Q 395 5 395 25 L 395 72 L 5 72 Z" fill="#FFFFFF" />
+  
+  <!-- Red QRIS Bar -->
+  <rect x="24" y="20" width="130" height="38" rx="6" fill="#CC1A20" />
+  <text x="89" y="47" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="24" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">QRIS</text>
+  
+  <!-- Subtitle Text -->
+  <text x="165" y="36" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="11" fill="#1E293B">QR CODE INDONESIAN STANDARD</text>
+  <text x="165" y="49" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="9" fill="#64748B">STANDAR PEMBAYARAN NASIONAL</text>
+
+  <!-- GPN Logo Badge -->
+  <rect x="330" y="20" width="46" height="38" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1" />
+  <circle cx="344" cy="39" r="9" fill="#017A83" opacity="0.8" />
+  <circle cx="356" cy="39" r="9" fill="#DE1D24" opacity="0.8" />
+  <text x="350" y="42" font-family="Arial, sans-serif" font-weight="900" font-size="7" fill="#FFFFFF" text-anchor="middle">GPN</text>
+
+  <!-- Divider Line -->
+  <line x1="20" y1="74" x2="380" y2="74" stroke="#E2E8F0" stroke-width="1.5" />
+
+  <!-- Merchant Name Header -->
+  <text x="200" y="104" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="16" fill="#0F172A" text-anchor="middle" letter-spacing="0.5">SURABAYA EV RENT</text>
+  <text x="200" y="122" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="11" fill="#017A83" text-anchor="middle">NMID : ID1024356789012 · A01</text>
+  <text x="200" y="137" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="10" fill="#64748B" text-anchor="middle">KOTA SURABAYA, JAWA TIMUR</text>
+
+  <!-- QR Frame Area -->
+  <rect x="50" y="150" width="300" height="300" rx="16" fill="#FFFFFF" stroke="#017A83" stroke-width="2.5" />
+
+  <!-- QR Code Finder Pattern 1 (Top-Left) -->
+  <rect x="75" y="175" width="60" height="60" rx="8" fill="#0F172A" />
+  <rect x="85" y="185" width="40" height="40" rx="4" fill="#FFFFFF" />
+  <rect x="93" y="193" width="24" height="24" rx="3" fill="#0F172A" />
+
+  <!-- QR Code Finder Pattern 2 (Top-Right) -->
+  <rect x="265" y="175" width="60" height="60" rx="8" fill="#0F172A" />
+  <rect x="275" y="185" width="40" height="40" rx="4" fill="#FFFFFF" />
+  <rect x="283" y="193" width="24" height="24" rx="3" fill="#0F172A" />
+
+  <!-- QR Code Finder Pattern 3 (Bottom-Left) -->
+  <rect x="75" y="365" width="60" height="60" rx="8" fill="#0F172A" />
+  <rect x="85" y="375" width="40" height="40" rx="4" fill="#FFFFFF" />
+  <rect x="93" y="383" width="24" height="24" rx="3" fill="#0F172A" />
+
+  <!-- QR Code Realistic Data Matrix Dots & Clusters -->
+  <!-- Top Section Matrix -->
+  <rect x="145" y="175" width="10" height="10" fill="#0F172A" />
+  <rect x="165" y="175" width="20" height="10" fill="#0F172A" />
+  <rect x="195" y="175" width="10" height="20" fill="#0F172A" />
+  <rect x="215" y="175" width="30" height="10" fill="#0F172A" />
+  
+  <rect x="145" y="195" width="20" height="10" fill="#0F172A" />
+  <rect x="175" y="195" width="10" height="10" fill="#0F172A" />
+  <rect x="215" y="195" width="10" height="20" fill="#0F172A" />
+  <rect x="235" y="195" width="20" height="10" fill="#0F172A" />
+
+  <rect x="145" y="215" width="10" height="20" fill="#0F172A" />
+  <rect x="165" y="215" width="20" height="10" fill="#0F172A" />
+  <rect x="195" y="225" width="20" height="10" fill="#0F172A" />
+  <rect x="225" y="215" width="20" height="20" fill="#0F172A" />
+
+  <!-- Center Matrix -->
+  <rect x="75" y="245" width="20" height="10" fill="#0F172A" />
+  <rect x="105" y="245" width="10" height="20" fill="#0F172A" />
+  <rect x="125" y="245" width="20" height="10" fill="#0F172A" />
+  <rect x="155" y="245" width="10" height="10" fill="#0F172A" />
+  <rect x="175" y="245" width="30" height="10" fill="#0F172A" />
+  <rect x="215" y="245" width="20" height="10" fill="#0F172A" />
+  <rect x="245" y="245" width="10" height="20" fill="#0F172A" />
+  <rect x="265" y="245" width="30" height="10" fill="#0F172A" />
+  <rect x="305" y="245" width="20" height="10" fill="#0F172A" />
+
+  <rect x="75" y="265" width="10" height="20" fill="#0F172A" />
+  <rect x="95" y="275" width="20" height="10" fill="#0F172A" />
+  <rect x="125" y="265" width="10" height="30" fill="#0F172A" />
+  <rect x="145" y="275" width="20" height="20" fill="#0F172A" />
+  <rect x="235" y="265" width="10" height="20" fill="#0F172A" />
+  <rect x="255" y="275" width="20" height="10" fill="#0F172A" />
+  <rect x="285" y="265" width="20" height="20" fill="#0F172A" />
+  <rect x="315" y="275" width="10" height="20" fill="#0F172A" />
+
+  <!-- Center QRIS Badge Icon -->
+  <rect x="176" y="276" width="48" height="48" rx="10" fill="#FFFFFF" stroke="#017A83" stroke-width="2" />
+  <rect x="182" y="282" width="36" height="36" rx="6" fill="#017A83" />
+  <path d="M 191 294 L 200 306 L 209 294" fill="none" stroke="#94C806" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+
+  <rect x="75" y="295" width="30" height="10" fill="#0F172A" />
+  <rect x="115" y="305" width="20" height="10" fill="#0F172A" />
+  <rect x="145" y="305" width="10" height="20" fill="#0F172A" />
+  <rect x="235" y="305" width="30" height="10" fill="#0F172A" />
+  <rect x="275" y="295" width="10" height="20" fill="#0F172A" />
+  <rect x="295" y="305" width="30" height="10" fill="#0F172A" />
+
+  <rect x="75" y="325" width="20" height="20" fill="#0F172A" />
+  <rect x="105" y="335" width="10" height="10" fill="#0F172A" />
+  <rect x="125" y="325" width="30" height="10" fill="#0F172A" />
+  <rect x="165" y="335" width="20" height="20" fill="#0F172A" />
+  <rect x="195" y="335" width="10" height="10" fill="#0F172A" />
+  <rect x="215" y="335" width="30" height="10" fill="#0F172A" />
+  <rect x="255" y="325" width="20" height="20" fill="#0F172A" />
+  <rect x="285" y="335" width="40" height="10" fill="#0F172A" />
+
+  <!-- Bottom Section Matrix -->
+  <rect x="145" y="365" width="20" height="20" fill="#0F172A" />
+  <rect x="175" y="375" width="30" height="10" fill="#0F172A" />
+  <rect x="215" y="365" width="20" height="10" fill="#0F172A" />
+  <rect x="245" y="375" width="10" height="20" fill="#0F172A" />
+  <rect x="265" y="365" width="30" height="10" fill="#0F172A" />
+  <rect x="305" y="375" width="20" height="10" fill="#0F172A" />
+
+  <rect x="145" y="395" width="10" height="20" fill="#0F172A" />
+  <rect x="165" y="405" width="20" height="20" fill="#0F172A" />
+  <rect x="195" y="395" width="20" height="10" fill="#0F172A" />
+  <rect x="225" y="405" width="30" height="10" fill="#0F172A" />
+  <rect x="265" y="395" width="10" height="30" fill="#0F172A" />
+  <rect x="285" y="405" width="40" height="20" fill="#0F172A" />
+
+  <!-- Scan Instruction -->
+  <text x="200" y="475" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="12" fill="#0F172A" text-anchor="middle">SCAN MENGGUNAKAN SEMUA APLIKASI PEMBAYARAN</text>
+  <text x="200" y="492" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="10" fill="#64748B" text-anchor="middle">BCA Mobile · Livin Mandiri · BRImo · BNI · GoPay · OVO · ShopeePay · DANA</text>
+
+  <!-- Bottom Strip -->
+  <rect x="5" y="515" width="390" height="40" rx="0" fill="#F8FAFC" />
+  <path d="M 5 515 L 395 515 L 395 535 Q 395 555 375 555 L 25 555 Q 5 555 5 535 Z" fill="#F8FAFC" />
+  <line x1="5" y1="515" x2="395" y2="515" stroke="#E2E8F0" stroke-width="1" />
+  <text x="200" y="538" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="600" font-size="9" fill="#94A3B8" text-anchor="middle">VERIFIKASI OTOMATIS &amp; MANUAL · BANK INDONESIA APPROVED</text>
+</svg>

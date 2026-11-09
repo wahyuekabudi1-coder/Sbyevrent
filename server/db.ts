@@ -175,6 +175,30 @@ export function initDatabase() {
   } catch {}
 
   seedInitialData();
+
+  // Migrasi kolom baru (unique_code, admin_confirmed_at, admin_notes) jika belum ada
+  try {
+    db.prepare('ALTER TABLE bookings ADD COLUMN unique_code INTEGER DEFAULT 0').run();
+  } catch (e) {}
+  try {
+    db.prepare('ALTER TABLE bookings ADD COLUMN admin_confirmed_at DATETIME').run();
+  } catch (e) {}
+  try {
+    db.prepare('ALTER TABLE bookings ADD COLUMN admin_notes TEXT').run();
+  } catch (e) {}
+  try {
+    db.prepare('ALTER TABLE bookings ADD COLUMN proof_image_url TEXT').run();
+  } catch (e) {}
+
+  // Pastikan qris_image_url ada di system_settings
+  try {
+    const qrisRow = db.prepare("SELECT value FROM system_settings WHERE key = 'qris_image_url'").get() as { value: string } | undefined;
+    if (!qrisRow) {
+      db.prepare("INSERT INTO system_settings (key, value) VALUES ('qris_image_url', '/assets/qris-official.svg')").run();
+    } else if (qrisRow.value === '/assets/qris-official.png') {
+      db.prepare("UPDATE system_settings SET value = '/assets/qris-official.svg' WHERE key = 'qris_image_url'").run();
+    }
+  } catch (e) {}
 }
 
 function seedInitialData() {

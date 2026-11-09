@@ -19,7 +19,7 @@ export const VehicleFleet: React.FC<VehicleFleetProps> = ({ onSelectVehicle }) =
       tagline: 'Smart Compact Electric Crossover',
       description:
         'Crossover listrik kompak yang gesit dan lincah, ideal untuk perjalanan dinas, mobilitas harian dalam kota Surabaya, Sidoarjo, maupun antar-kota di Jawa Timur.',
-      image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1000&q=80',
+      image: '/src/assets/images/vinfast_vf5_1794185355445.jpg',
       specs: [
         { label: 'Kapasitas', value: 'Maks. 3 Penumpang', icon: Users },
         { label: 'Layanan', value: 'Termasuk Driver', icon: UserCheck },
@@ -33,8 +33,8 @@ export const VehicleFleet: React.FC<VehicleFleetProps> = ({ onSelectVehicle }) =
       model: 'VinFast VF e34',
       tagline: 'Spacious Mid-Size Electric SUV',
       description:
-        'SUV listrik berdimensi lebih luas dengan ruang kabin lapang dan suspensi empuk, menawarkan kenyamanan ekstra untuk perjalanan keluarga dan rute wisata Malang.',
-      image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1000&q=80',
+        'SUV listrik berdimensi lebih luas dengan ruang kabin lapang dan suspensi empuk, menawarkan kenyamanan ekstra untuk perjalanan dinas dan keluarga di Surabaya dan Sidoarjo.',
+      image: '/src/assets/images/vinfast_vfe34_1794185371447.jpg',
       specs: [
         { label: 'Kapasitas', value: 'Maks. 3 Penumpang', icon: Users },
         { label: 'Layanan', value: 'Termasuk Driver', icon: UserCheck },
@@ -42,7 +42,7 @@ export const VehicleFleet: React.FC<VehicleFleetProps> = ({ onSelectVehicle }) =
         { label: 'Tipe Bodi', value: 'Mid C-SUV', icon: Gauge },
       ],
       pricingHint: 'Mulai Rp290.000 (Paket 3 Jam)',
-      availableCities: ['Surabaya', 'Malang']
+      availableCities: ['Surabaya', 'Sidoarjo']
     }
   ];
 

@@ -15,8 +15,8 @@ const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Inisialisasi Database SQLite
 initDatabase();
@@ -64,9 +64,9 @@ app.get('/sitemap.xml', (req, res) => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>${baseUrl}/rental-mobil-listrik-malang</loc>
+    <loc>${baseUrl}/pesan-rental</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>

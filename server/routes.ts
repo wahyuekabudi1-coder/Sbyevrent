@@ -229,22 +229,26 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
     const bookingNumber = `SJT-${dateCompact}-${randomSuffix}`;
     const bookingId = `BKG-${crypto.randomUUID()}`;
 
-    // 3. Simulasikan URL Payment Gateway ArtoPay
+    // 3. Kode Unik Pembayaran (< Rp1.000)
+    const uniqueCode = Number(req.body.uniqueCode) || Math.floor(100 + Math.random() * 899);
+    const totalAmount = pricing.price + uniqueCode;
+
+    // 4. Simulasikan URL Payment Gateway
     const paymentUrl = `/payment/${bookingNumber}`;
 
-    // 4. Masukkan ke database dengan status pending_payment dan kunci unit
+    // 5. Masukkan ke database dengan status pending_payment dan kunci unit
     db.prepare(`
       INSERT INTO bookings (
         id, booking_number, service_type, city, booking_date, booking_time,
         vehicle_model, duration_hours, km_limit, assigned_vehicle_id,
         pickup_address, dropoff_address, customer_name, customer_phone,
-        passenger_count, notes, total_amount, payment_status,
+        passenger_count, notes, total_amount, unique_code, payment_status,
         booking_status, assigned_driver_id, expires_at, artopay_payment_url
       ) VALUES (
         ?, ?, 'rental', ?, ?, ?,
         ?, ?, ?, ?,
         ?, ?, ?, ?,
-        ?, ?, ?, 'pending',
+        ?, ?, ?, ?, 'pending',
         'pending_payment', ?, ?, ?
       )
     `).run(
@@ -263,7 +267,8 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
       phoneClean,
       pCount,
       notes || '',
-      pricing.price,
+      totalAmount,
+      uniqueCode,
       availableVehicle.dedicated_driver_id || null,
       expiresAt,
       paymentUrl
@@ -272,7 +277,10 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
     return {
       bookingId,
       bookingNumber,
-      amount: pricing.price,
+      basePrice: pricing.price,
+      uniqueCode,
+      totalAmount,
+      amount: totalAmount,
       expiresAt,
       paymentUrl
     };
@@ -419,6 +427,10 @@ apiRouter.get('/payment/:bookingNumber', (req: Request, res: Response) => {
       secondsLeft = Math.max(0, diff);
     }
 
+    // Ambil gambar QRIS aktif dari database (bisa SVG default atau gambar asli yang diupload user/admin)
+    const qrisRow = db.prepare("SELECT value FROM system_settings WHERE key = 'qris_image_url'").get() as { value: string } | undefined;
+    const qrisImageUrl = qrisRow?.value || '/assets/qris-official.svg';
+
     res.json({
       success: true,
       booking: {
@@ -436,6 +448,13 @@ apiRouter.get('/payment/:bookingNumber', (req: Request, res: Response) => {
         customerName: booking.customer_name,
         customerPhone: booking.customer_phone,
         totalAmount: booking.total_amount,
+        basePrice: (booking.total_amount - (booking.unique_code || 0)) || booking.official_price || booking.total_amount,
+        uniqueCode: booking.unique_code || 0,
+        paymentMethod: booking.payment_method || 'QRIS',
+        paidAt: booking.paid_at,
+        adminConfirmedAt: booking.admin_confirmed_at,
+        proofImageUrl: booking.proof_image_url || null,
+        qrisImageUrl,
         paymentStatus: booking.payment_status,
         bookingStatus: booking.booking_status,
         expiresAt: booking.expires_at,
@@ -448,9 +467,9 @@ apiRouter.get('/payment/:bookingNumber', (req: Request, res: Response) => {
   }
 });
 
-// Verifikasi / Eksekusi Pembayaran ArtoPay (Mendukung Sandbox & Callback)
+// Verifikasi / Eksekusi Pembayaran QRIS Langsung
 apiRouter.post('/payment/process', (req: Request, res: Response) => {
-  const { bookingNumber, paymentMethod, transactionRef } = req.body;
+  const { bookingNumber, paymentMethod, transactionRef, proofImage } = req.body;
 
   if (!bookingNumber) {
     return res.status(400).json({ success: false, message: 'Nomor booking wajib disertakan.' });
@@ -471,7 +490,7 @@ apiRouter.post('/payment/process', (req: Request, res: Response) => {
     }
 
     const now = new Date().toISOString();
-    const artopayTrxId = transactionRef || `ARTOPAY-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const qrisTrxId = transactionRef || `QRIS-${Date.now()}-${booking.unique_code || Math.floor(100 + Math.random() * 899)}`;
 
     // Update pembayaran & booking status secara atomik
     db.prepare(`
@@ -479,11 +498,12 @@ apiRouter.post('/payment/process', (req: Request, res: Response) => {
       SET payment_status = 'paid',
           payment_method = ?,
           artopay_transaction_id = ?,
+          proof_image_url = COALESCE(?, proof_image_url),
           booking_status = 'confirmed',
           paid_at = ?,
           updated_at = ?
       WHERE booking_number = ?
-    `).run(paymentMethod || 'QRIS', artopayTrxId, now, now, bookingNumber);
+    `).run(paymentMethod || 'QRIS', qrisTrxId, proofImage || null, now, now, bookingNumber);
 
     // Catat log audit
     db.prepare(`
@@ -491,20 +511,74 @@ apiRouter.post('/payment/process', (req: Request, res: Response) => {
       VALUES (?, ?, ?, ?)
     `).run(
       `LOG-${crypto.randomUUID()}`,
-      'ArtoPay Gateway',
+      'QRIS Payment',
       'PAYMENT_CONFIRMED',
-      `Booking ${bookingNumber} berhasil dibayar sebesar Rp${booking.total_amount.toLocaleString('id-ID')} via ${paymentMethod || 'QRIS'}`
+      `Booking ${bookingNumber} berhasil dibayar via QRIS sebesar Rp${booking.total_amount.toLocaleString('id-ID')} (Kode Unik: ${booking.unique_code})`
     );
 
     res.json({
       success: true,
-      message: 'Pembayaran berhasil dikonfirmasi. Unit telah resmi dikunci untuk Anda.',
+      message: 'Pembayaran QRIS berhasil disimpan. E-Receipt resmi telah diterbitkan.',
       data: {
         bookingNumber,
         status: 'confirmed',
         paidAt: now,
-        transactionId: artopayTrxId
+        transactionId: qrisTrxId
       }
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Upload Bukti Pembayaran Transfer / QRIS dari Pelanggan
+apiRouter.post('/payment/upload-proof', (req: Request, res: Response) => {
+  const { bookingNumber, proofImage } = req.body;
+
+  if (!bookingNumber || !proofImage) {
+    return res.status(400).json({ success: false, message: 'Nomor booking dan gambar bukti transfer wajib diisi.' });
+  }
+
+  try {
+    const booking = db.prepare('SELECT id FROM bookings WHERE booking_number = ?').get(bookingNumber);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Pesanan tidak ditemukan.' });
+    }
+
+    const now = new Date().toISOString();
+    db.prepare(`
+      UPDATE bookings 
+      SET proof_image_url = ?, 
+          updated_at = ?
+      WHERE booking_number = ?
+    `).run(proofImage, now, bookingNumber);
+
+    res.json({ success: true, message: 'Bukti transfer berhasil diunggah.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Upload / Update Gambar QRIS Toko Resmi (Bisa diakses dari UI checkout & Admin)
+apiRouter.post('/settings/upload-qris', (req: Request, res: Response) => {
+  const { qrisImage } = req.body;
+
+  if (!qrisImage) {
+    return res.status(400).json({ success: false, message: 'Gambar QRIS wajib disertakan.' });
+  }
+
+  try {
+    const now = new Date().toISOString();
+    db.prepare(`
+      INSERT INTO system_settings (key, value, updated_at) 
+      VALUES ('qris_image_url', ?, ?)
+      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+    `).run(qrisImage, now);
+
+    res.json({
+      success: true,
+      message: 'Gambar QRIS resmi berhasil diperbarui.',
+      qrisImageUrl: qrisImage
     });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
@@ -1049,6 +1123,14 @@ apiRouter.patch('/admin/bookings/:id', checkAdminAuth, (req: Request, res: Respo
       fields.push('assigned_vehicle_id = ?');
       params.push(assignedVehicleId);
     }
+    if (req.body.adminConfirmed || bookingStatus === 'confirmed') {
+      fields.push('admin_confirmed_at = ?');
+      params.push(new Date().toISOString());
+    }
+    if (req.body.adminNotes !== undefined) {
+      fields.push('admin_notes = ?');
+      params.push(req.body.adminNotes);
+    }
 
     fields.push('updated_at = ?');
     params.push(new Date().toISOString());
@@ -1057,6 +1139,28 @@ apiRouter.patch('/admin/bookings/:id', checkAdminAuth, (req: Request, res: Respo
     db.prepare(`UPDATE bookings SET ${fields.join(', ')} WHERE id = ?`).run(...params);
 
     res.json({ success: true, message: 'Status booking berhasil diperbarui.' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Admin: Konfirmasi Pembayaran dan Jadwal Khusus
+apiRouter.post('/admin/bookings/:id/confirm-payment', checkAdminAuth, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { notes } = req.body;
+  try {
+    const now = new Date().toISOString();
+    db.prepare(`
+      UPDATE bookings 
+      SET payment_status = 'paid',
+          booking_status = 'confirmed',
+          admin_confirmed_at = ?,
+          admin_notes = ?,
+          updated_at = ?
+      WHERE id = ? OR booking_number = ?
+    `).run(now, notes || 'Pembayaran dan jadwal terkonfirmasi oleh Admin', now, id, id);
+
+    res.json({ success: true, message: 'Pembayaran dan jadwal berhasil dikonfirmasi oleh Admin.' });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

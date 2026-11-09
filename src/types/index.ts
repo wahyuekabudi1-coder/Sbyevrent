@@ -6,12 +6,14 @@ export interface SystemSettings {
   taxi_min_fare: string;
   admin_pin: string;
   lock_timeout_minutes: string;
+  qris_image_url?: string;
+  [key: string]: string | undefined;
 }
 
 export interface RentalPricingItem {
   id: string;
   vehicle_model: 'VinFast VF 5' | 'VinFast VF e34';
-  city: 'Surabaya' | 'Sidoarjo' | 'Malang';
+  city: 'Surabaya' | 'Sidoarjo' | string;
   duration_hours: number;
   km_limit: number;
   price: number;
@@ -22,11 +24,9 @@ export interface RentalPricingItem {
 export interface Vehicle {
   id: string;
   code: string;
-  model: 'VinFast VF 5' | 'VinFast VF e34' | string;
+  model: 'VinFast VF 5' | 'VinFast VF e34';
   plate_number: string;
-  city: 'Surabaya' | 'Sidoarjo' | 'Malang' | string;
-  driver_name: string;
-  driver_phone?: string;
+  city: 'Surabaya' | 'Sidoarjo' | string;
   dedicated_driver_id?: string;
   dedicated_driver_name?: string;
   is_active: number;

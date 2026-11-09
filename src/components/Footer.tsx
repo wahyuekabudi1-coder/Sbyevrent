@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Logo } from './Logo';
-import { LiveryDividerStripe, SectionTechPattern } from './EvLiveryDecals';
-import { ShieldCheck, Phone, MapPin, Clock, ArrowRight } from 'lucide-react';
+import { LiveryDividerStripe, LiveryStripe } from './EvLiveryDecals';
+import { ShieldCheck, Phone, Mail, MapPin } from 'lucide-react';
 
 interface FooterProps {
   onNavigatePage: (page: string) => void;
@@ -14,189 +14,153 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRental,
   onOpenTaxi
 }) => {
-  const [adminClicks, setAdminClicks] = useState(0);
-
-  const handleCopyrightClick = () => {
-    setAdminClicks((prev) => {
-      const next = prev + 1;
-      // Jika diklik 14 kali, kembali semula (reset ke 0)
-      if (next >= 14) {
-        return 0;
-      }
-      return next;
-    });
-  };
-
   return (
-    <footer className="relative bg-gradient-to-b from-brand-mint/30 via-slate-50 to-brand-mint-subtle text-slate-700 border-t-2 border-brand-teal/20 overflow-hidden">
-      {/* Texture Pola Elektrik */}
-      <SectionTechPattern />
-
+    <footer className="bg-brand-dark text-slate-300 border-t border-brand-teal/20 relative">
       {/* Ornamen Garis Livery Mobil Listrik di Atas Footer */}
-      <LiveryDividerStripe className="opacity-90" />
+      <LiveryDividerStripe className="opacity-75" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 relative z-10">
-        
-        {/* LOGO DI BAGIAN TENGAH-TENGAH (CENTERED) */}
-        <div className="flex flex-col items-center text-center max-w-xl mx-auto mb-8">
-          <div className="inline-flex items-center justify-center bg-white px-5 py-2.5 rounded-2xl shadow-sm border border-brand-teal/25">
-            <Logo className="h-10 sm:h-12" showSubtitle={true} lightMode={false} />
-          </div>
-
-          <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mt-3 max-w-md">
-            Layanan sewa mobil listrik dengan driver dan taksi online mobil listrik modern di Surabaya, Sidoarjo, dan Malang Raya bersama Surabaya EV Rent (Powered by Smart Journey).
-          </p>
-
-          <div className="flex items-center gap-2 text-xs text-brand-teal font-bold mt-2 bg-white/80 px-3 py-1 rounded-full border border-brand-teal/20 font-mono">
-            <ShieldCheck className="w-4 h-4 shrink-0 text-brand-teal" />
-            <span>Pemesanan &amp; Pembayaran Digital Resmi Surabaya EV Rent</span>
-          </div>
-        </div>
-
-        {/* Baris Navigasi & Informasi Kontak */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 pb-6 border-b border-brand-teal/15">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
           
-          {/* Kolom 1: Layanan Utama */}
-          <div className="md:col-span-4 space-y-2.5">
-            <h4 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-3 bg-brand-lime rounded-xs" />
-              <span>Layanan Kami</span>
-            </h4>
-            <ul className="space-y-1.5 text-xs font-medium">
+          {/* Kolom 1 & 2: Identitas Perusahaan & Logo Resmi Yang Diperbesar */}
+          <div className="sm:col-span-2 space-y-4">
+            <Logo className="h-16 sm:h-20 md:h-24" showSubtitle={true} lightMode={true} />
+            
+            <div className="space-y-1">
+              <h4 className="text-sm sm:text-base font-extrabold text-white tracking-wide">
+                SURABAYA EV RENT
+              </h4>
+              <p className="text-xs text-brand-lime font-semibold">
+                Layanan Rental &amp; Taksi Mobil Listrik
+              </p>
+              <p className="text-[11px] sm:text-xs text-slate-400">
+                Powered by Smart Journey
+              </p>
+            </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed max-w-sm pt-1">
+              Menghadirkan kenyamanan mobilitas ramah lingkungan di Jawa Timur dengan armada 100% mobil listrik VinFast VF 5 dan VF e34 bersama driver profesional bersertifikasi.
+            </p>
+
+            <div className="pt-2 flex items-center gap-2 text-xs text-slate-400">
+              <ShieldCheck className="w-4 h-4 text-brand-lime shrink-0" />
+              <span>Sistem Pemesanan &amp; Pembayaran Digital Resmi</span>
+            </div>
+          </div>
+
+          {/* Kolom 3: Layanan Kami */}
+          <div className="space-y-3">
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+              Layanan Utama
+            </h5>
+            <ul className="space-y-2 text-xs">
               <li>
                 <button
                   onClick={onOpenRental}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 block"
+                  className="hover:text-brand-lime transition-colors cursor-pointer text-left py-1 block"
                 >
-                  Rental Mobil Listrik dengan Driver (H-1)
+                  Rental Mobil Listrik (H-1)
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => onNavigatePage('seo-taxi')}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 block"
+                  onClick={onOpenTaxi}
+                  className="hover:text-brand-lime transition-colors cursor-pointer text-left py-1 block"
                 >
-                  Taksi Mobil Listrik (Tarif Rp7.000/km)
+                  Taksi Mobil Listrik (Rp7.000/km)
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => {
-                    document.getElementById('pricing-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 block"
+                  onClick={() => onNavigatePage('driver')}
+                  className="hover:text-white transition-colors cursor-pointer text-left py-1 block text-brand-lime font-semibold"
                 >
-                  Paket Durasi 3, 5, 8, dan 12 Jam
+                  Portal Khusus Driver
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigatePage('admin')}
+                  className="hover:text-slate-300 transition-colors cursor-pointer text-left py-1 block text-slate-400"
+                >
+                  Portal Manajemen Admin
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Kolom 2: Wilayah Operasi & Landing Page Kota SEO */}
-          <div className="md:col-span-4 space-y-2.5">
-            <h4 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-3 bg-brand-teal rounded-xs" />
-              <span>Wilayah Operasi &amp; Kota</span>
-            </h4>
-            <ul className="space-y-1.5 text-xs font-medium">
+          {/* Kolom 4: Halaman Kota & SEO */}
+          <div className="space-y-3">
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+              Wilayah Operasional
+            </h5>
+            <ul className="space-y-2 text-xs">
               <li>
                 <button
                   onClick={() => onNavigatePage('seo-surabaya')}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 flex items-center gap-1"
+                  className="hover:text-brand-lime transition-colors cursor-pointer text-left py-1 block"
                 >
-                  <span>Rental Mobil Listrik Surabaya</span>
-                  <ArrowRight className="w-3 h-3 text-brand-teal" />
+                  Rental Listrik Surabaya
                 </button>
               </li>
               <li>
                 <button
                   onClick={() => onNavigatePage('seo-sidoarjo')}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 flex items-center gap-1"
+                  className="hover:text-brand-lime transition-colors cursor-pointer text-left py-1 block"
                 >
-                  <span>Sewa Mobil Listrik Sidoarjo</span>
-                  <ArrowRight className="w-3 h-3 text-brand-teal" />
+                  Rental Listrik Sidoarjo
                 </button>
               </li>
               <li>
                 <button
-                  onClick={() => onNavigatePage('seo-malang')}
-                  className="hover:text-brand-teal text-slate-700 transition-colors cursor-pointer text-left py-1 flex items-center gap-1"
+                  onClick={() => onNavigatePage('seo-taxi')}
+                  className="hover:text-brand-lime transition-colors cursor-pointer text-left py-1 block"
                 >
-                  <span>Rental Mobil Listrik Malang &amp; Batu</span>
-                  <ArrowRight className="w-3 h-3 text-brand-teal" />
+                  Layanan Taksi Listrik Jatim
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Kolom 3: Kontak Cepat Customer Care */}
-          <div className="md:col-span-4 space-y-2.5">
-            <h4 className="text-xs font-black text-brand-primary uppercase tracking-wider flex items-center gap-1.5">
-              <span className="w-1.5 h-3 bg-brand-lime rounded-xs" />
-              <span>Customer Care</span>
-            </h4>
-            <a
-              href="https://wa.me/6282233697979?text=Halo%20kak%2C%20mau%20sewa%20mobil%20listriknya"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2.5 bg-white hover:bg-emerald-50/50 p-2.5 rounded-xl border border-brand-teal/20 transition-all shadow-2xs group"
-            >
-              <div className="w-7 h-7 rounded-full bg-[#25D366] text-white flex items-center justify-center shrink-0">
-                <Phone className="w-3.5 h-3.5 fill-white" />
-              </div>
-              <div className="text-xs">
-                <span className="font-bold text-slate-900 block group-hover:text-emerald-700 transition-colors">WhatsApp Customer Care</span>
-                <span className="text-slate-600 font-semibold text-[11px] font-mono">0822-3369-7979</span>
-              </div>
-            </a>
+          {/* Kolom 5: Kontak & Ketentuan */}
+          <div className="space-y-3 sm:col-span-2 lg:col-span-1">
+            <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+              Informasi &amp; Kontak
+            </h5>
+            <ul className="space-y-2 text-xs text-slate-400">
+              <li className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-brand-lime shrink-0" />
+                <span>Surabaya · Sidoarjo</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-brand-lime shrink-0" />
+                <span>Customer Care WhatsApp</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-brand-lime shrink-0" />
+                <span className="truncate">sjtrans.finance@gmail.com</span>
+              </li>
+            </ul>
+            <div className="pt-1 text-[11px] text-slate-500">
+              Jam Operasional: 24 Jam Online
+            </div>
           </div>
 
         </div>
 
-        {/* Baris Info Operasional Singkat */}
-        <div className="py-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-600 border-b border-brand-teal/15">
-          <div className="flex items-center gap-2 bg-white/70 p-2.5 rounded-xl border border-brand-teal/15">
-            <MapPin className="w-3.5 h-3.5 text-brand-teal shrink-0" />
-            <span>Wilayah Operasional Resmi: <strong>Surabaya, Sidoarjo, dan Malang</strong></span>
-          </div>
-
-          <div className="flex items-center gap-2 bg-white/70 p-2.5 rounded-xl border border-brand-teal/15">
-            <Clock className="w-3.5 h-3.5 text-brand-teal shrink-0" />
-            <span>Pemesanan Online: <strong>24 Jam via Website &amp; WhatsApp Resmi</strong></span>
-          </div>
-        </div>
-
-        {/* Baris Bawah: Copyright Identitas Legal & Powered by Smart Journey */}
-        <div className="pt-5 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-2 text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-            <span
-              onClick={handleCopyrightClick}
-              className="select-none cursor-pointer hover:text-brand-primary transition-colors font-medium"
-              title=""
-            >
-              &copy; {new Date().getFullYear()} PT. Sawah Jaya Trans · Surabaya EV Rent
-            </span>
-
-            {/* Tombol Tersembunyi: Akses Admin Rahasia (10-13 klik, reset pada klik 14) */}
-            {adminClicks >= 10 && adminClicks <= 13 && (
-              <button
-                onClick={() => onNavigatePage('admin')}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-brand-primary text-brand-lime border border-brand-lime/40 text-[10px] font-bold shadow-md hover:bg-slate-800 transition-all cursor-pointer animate-pulse"
-                title="Akses Rahasia Pengelola Admin"
-              >
-                <ShieldCheck className="w-3 h-3 text-brand-lime" />
-                <span>Dashboard Admin</span>
-              </button>
-            )}
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-semibold">
-            <span>Surabaya EV Rent</span>
-            <span aria-hidden="true" className="text-slate-300">·</span>
-            <span className="text-brand-teal font-black">Powered by Smart Journey</span>
+        {/* Garis Bawah & Hak Cipta */}
+        <div className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-brand-teal/20 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-left">
+          <p>
+            &copy; {new Date().getFullYear()} Surabaya EV Rent. Hak cipta dilindungi.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
+            <span>Kebijakan Privasi</span>
+            <span aria-hidden="true">·</span>
+            <span>Syarat &amp; Ketentuan</span>
+            <span aria-hidden="true">·</span>
+            <span className="text-brand-lime font-bold">Powered by Smart Journey</span>
           </div>
         </div>
-
       </div>
     </footer>
   );

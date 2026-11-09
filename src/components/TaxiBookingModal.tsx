@@ -20,11 +20,6 @@ const POPULAR_LOCATIONS: Record<string, { name: string; lat: number; lng: number
     { name: 'Alun-Alun Sidoarjo', lat: -7.4478, lng: 112.7183, address: 'Jl. Achmad Yani, Sidokumpul, Sidoarjo' },
     { name: 'Terminal Purabaya (Bungurasih)', lat: -7.3524, lng: 112.7247, address: 'Bungurasih, Waru, Sidoarjo' },
     { name: 'Suncity Mall Sidoarjo', lat: -7.4542, lng: 112.7121, address: 'Jl. Pahlawan No.1, Sidokumpul, Sidoarjo' },
-  ],
-  Malang: [
-    { name: 'Stasiun Malang Kota Baru', lat: -7.9775, lng: 112.6372, address: 'Jl. Trunojoyo No.10, Klojen, Malang' },
-    { name: 'Alun-Alun Kota Batu', lat: -7.8712, lng: 112.5268, address: 'Jl. Agus Salim, Sisir, Kota Batu' },
-    { name: 'Universitas Brawijaya (UB)', lat: -7.9525, lng: 112.6144, address: 'Jl. Veteran, Ketawanggede, Malang' },
   ]
 };
 
@@ -33,7 +28,7 @@ export const TaxiBookingModal: React.FC<TaxiBookingModalProps> = ({
   onClose,
   onSuccessBooking
 }) => {
-  const [city, setCity] = useState<'Surabaya' | 'Sidoarjo' | 'Malang'>('Surabaya');
+  const [city, setCity] = useState<'Surabaya' | 'Sidoarjo'>('Surabaya');
   const [pickupAddress, setPickupAddress] = useState<string>('');
   const [dropoffAddress, setDropoffAddress] = useState<string>('');
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -178,8 +173,8 @@ export const TaxiBookingModal: React.FC<TaxiBookingModalProps> = ({
             <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
               Wilayah Layanan Taksi
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['Surabaya', 'Sidoarjo', 'Malang'] as const).map(c => (
+            <div className="grid grid-cols-2 gap-2">
+              {(['Surabaya', 'Sidoarjo'] as const).map(c => (
                 <button
                   key={c}
                   type="button"
