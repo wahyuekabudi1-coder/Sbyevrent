@@ -22,8 +22,7 @@ export default function App() {
   // Fixed Page Rental Prefill
   const [rentalPrefill, setRentalPrefill] = useState<{ model?: string; hours?: number; city?: string } | undefined>();
   
-  // Taxi & Tracker Modals
-  const [isTaxiOpen, setIsTaxiOpen] = useState(false);
+  // Tracker Modal
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
   const [trackerCode, setTrackerCode] = useState('');
   

@@ -56,8 +56,8 @@ export const RentalBookingPage: React.FC<RentalBookingPageProps> = ({
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [notes, setNotes] = useState<string>('');
 
-  // Kode Unik Acak (< Rp1.000, 3 digit)
-  const [uniqueCode] = useState<number>(() => Math.floor(100 + Math.random() * 899));
+  // Kode Unik Acak (Tidak lebih dari Rp300, utamakan 100-200 rupiah)
+  const [uniqueCode] = useState<number>(() => (Math.random() < 0.7 ? Math.floor(101 + Math.random() * 99) : Math.floor(201 + Math.random() * 98)));
 
   // State Pesanan & Pembayaran
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);

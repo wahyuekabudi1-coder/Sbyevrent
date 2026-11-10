@@ -6,6 +6,7 @@ interface InteractivePickupMapProps {
   city: 'Surabaya' | 'Sidoarjo';
   onLocationSelect: (location: { address: string; lat: number; lng: number }) => void;
   currentAddress?: string;
+  selectedCoords?: { lat: number; lng: number } | null;
 }
 
 const CITY_COORDS: Record<'Surabaya' | 'Sidoarjo', { lat: number; lng: number }> = {
@@ -13,27 +14,12 @@ const CITY_COORDS: Record<'Surabaya' | 'Sidoarjo', { lat: number; lng: number }>
   Sidoarjo: { lat: -7.4478, lng: 112.7183 },
 };
 
-const POPULAR_POINTS: Record<'Surabaya' | 'Sidoarjo', Array<{ name: string; address: string; lat: number; lng: number }>> = {
-  Surabaya: [
-    { name: 'Stasiun Gubeng', address: 'Stasiun Surabaya Gubeng, Jl. Gubeng Masjid No.1, Tambaksari, Surabaya', lat: -7.2654, lng: 112.7523 },
-    { name: 'Stasiun Pasar Turi', address: 'Stasiun Pasar Turi, Jl. Semarang No.1, Gundih, Bubutan, Surabaya', lat: -7.2478, lng: 112.7314 },
-    { name: 'Tunjungan Plaza (TP)', address: 'Tunjungan Plaza, Jl. Jenderal Basuki Rachmat No.8-12, Tegalsari, Surabaya', lat: -7.2625, lng: 112.7397 },
-    { name: 'Pakuwon Mall', address: 'Pakuwon Mall, Jl. Puncak Indah Lontar No.2, Babatan, Wiyung, Surabaya', lat: -7.2995, lng: 112.6756 },
-    { name: 'Galaxy Mall', address: 'Galaxy Mall Surabaya, Jl. Dharmahusada Indah Timur No.35-37, Mulyorejo, Surabaya', lat: -7.2751, lng: 112.7818 },
-  ],
-  Sidoarjo: [
-    { name: 'Alun-Alun Sidoarjo', address: 'Alun-Alun Sidoarjo, Jl. Cokronegoro, Sidokumpul, Sidoarjo', lat: -7.4478, lng: 112.7178 },
-    { name: 'Stasiun Sidoarjo Kota', address: 'Stasiun Sidoarjo, Jl. Pahlawan No.1, Lemahputro, Sidoarjo', lat: -7.4567, lng: 112.7132 },
-    { name: 'Terminal Purabaya Bungurasih', address: 'Terminal Purabaya, Jl. Letjend Sutoyo, Bungurasih, Waru, Sidoarjo', lat: -7.3533, lng: 112.7246 },
-    { name: 'Lippo Plaza Sidoarjo', address: 'Lippo Plaza Sidoarjo, Jl. Jati Raya No.1, Jati, Sidoarjo', lat: -7.4529, lng: 112.7058 },
-    { name: 'Pasar Larangan Sidoarjo', address: 'Pasar Larangan, Jl. Sunandar Priyo Sudarmo, Larangan, Candi, Sidoarjo', lat: -7.4682, lng: 112.7161 },
-  ]
-};
 
 export const InteractivePickupMap: React.FC<InteractivePickupMapProps> = ({
   city,
   onLocationSelect,
-  currentAddress
+  currentAddress,
+  selectedCoords
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -137,6 +123,12 @@ export const InteractivePickupMap: React.FC<InteractivePickupMapProps> = ({
         maxZoom: 19,
       }).addTo(map);
 
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 150);
+
       const marker = L.marker([initialCoords.lat, initialCoords.lng], {
         icon: createCustomIcon(),
         draggable: true,
@@ -188,6 +180,15 @@ export const InteractivePickupMap: React.FC<InteractivePickupMapProps> = ({
     }
   }, [city]);
 
+  // Sync marker when selectedCoords passed from autocomplete
+  useEffect(() => {
+    if (selectedCoords && mapInstanceRef.current && markerRef.current) {
+      mapInstanceRef.current.setView([selectedCoords.lat, selectedCoords.lng], 15);
+      markerRef.current.setLatLng([selectedCoords.lat, selectedCoords.lng]);
+      setCoords(selectedCoords);
+    }
+  }, [selectedCoords]);
+
   // Handle GPS "Gunakan Lokasi Saya"
   const handleGetLiveLocation = () => {
     if (!navigator.geolocation) {
@@ -223,43 +224,27 @@ export const InteractivePickupMap: React.FC<InteractivePickupMapProps> = ({
     );
   };
 
-  const handleSelectQuickPoint = (pt: { address: string; lat: number; lng: number }) => {
-    setCoords({ lat: pt.lat, lng: pt.lng });
-    setAddressDisplay(pt.address);
-    if (mapInstanceRef.current && markerRef.current) {
-      mapInstanceRef.current.flyTo([pt.lat, pt.lng], 15, { animate: true });
-      markerRef.current.setLatLng([pt.lat, pt.lng]);
-    }
-    onLocationSelect(pt);
-  };
-
   return (
-    <div className="space-y-3">
-      {/* Top Map Control Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-brand-mint/50 p-2.5 sm:p-3 rounded-xl border border-brand-teal/20">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-brand-teal text-white flex items-center justify-center shrink-0">
-            <MapPin className="w-4 h-4 text-brand-lime" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-brand-primary">Tentukan Titik Jemput di Peta</p>
-            <p className="text-[11px] text-slate-500">Geser pin ke depan rumah/titik penjemputan Anda</p>
-          </div>
-        </div>
+    <div className="space-y-2">
+      {/* Top Map Action Bar */}
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] text-slate-500 font-medium">
+          Geser pin pada peta untuk menyesuaikan titik penjemputan persis di depan rumah Anda
+        </span>
 
         {/* Tombol Pilih Lokasi Saya */}
         <button
           type="button"
           onClick={handleGetLiveLocation}
           disabled={isLocating}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-teal bg-white hover:bg-brand-teal hover:text-white border border-brand-teal/30 rounded-lg shadow-2xs transition-all cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-teal bg-brand-mint hover:bg-brand-teal hover:text-white border border-brand-teal/30 rounded-lg shadow-2xs transition-all cursor-pointer disabled:opacity-50 shrink-0"
         >
           {isLocating ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-teal" />
           ) : (
-            <Crosshair className="w-3.5 h-3.5 text-brand-lime" />
+            <Crosshair className="w-3.5 h-3.5 text-brand-teal" />
           )}
-          <span>{isLocating ? 'Mendeteksi GPS...' : 'Pilih Lokasi Saya Saat Ini'}</span>
+          <span>{isLocating ? 'Mendeteksi...' : 'Lokasi Saya (GPS)'}</span>
         </button>
       </div>
 
@@ -286,26 +271,6 @@ export const InteractivePickupMap: React.FC<InteractivePickupMapProps> = ({
             <span>Memperbarui alamat...</span>
           </div>
         )}
-      </div>
-
-      {/* Quick Select Popular Landmark Chips */}
-      <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600">
-          <Sparkles className="w-3.5 h-3.5 text-brand-teal" />
-          <span>Titik Populer / Landmark {city}:</span>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          {POPULAR_POINTS[city]?.map((pt, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleSelectQuickPoint(pt)}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-brand-mint text-slate-700 hover:text-brand-teal border border-slate-200 hover:border-brand-teal/30 transition-colors cursor-pointer"
-            >
-              {pt.name}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Alamat Terpilih dari Peta */}

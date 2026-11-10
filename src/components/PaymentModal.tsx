@@ -327,9 +327,22 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               {/* Rincian Finansial & Kode Unik */}
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
-                <div className="flex justify-between py-1 border-b border-slate-200/60">
+                <div className="flex justify-between items-center py-1 border-b border-slate-200/60">
                   <span className="text-slate-500">Nomor Pesanan:</span>
-                  <span className="font-mono font-bold text-slate-900">{booking.bookingNumber}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                      {booking.bookingNumber}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy(booking.bookingNumber)}
+                      className="px-2 py-1 rounded bg-brand-mint hover:bg-brand-teal hover:text-white text-[10px] font-bold text-brand-teal transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                      title="Salin Kode Pemesanan untuk Pelacakan"
+                    >
+                      <Copy className="w-3 h-3" />
+                      <span>{copiedAmount ? 'Tersalin' : 'Salin'}</span>
+                    </button>
+                  </div>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-200/60">
                   <span className="text-slate-500">Waktu Pembayaran:</span>
@@ -492,20 +505,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5 print:hidden">
               <button
                 type="button"
-                onClick={handlePrintReceipt}
-                className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs min-h-[44px]"
-              >
-                <Printer className="w-4 h-4 text-brand-lime" />
-                <span>Cetak / Unduh E-Receipt</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={onClose}
-                className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-brand-teal hover:bg-brand-teal-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs min-h-[44px]"
+                className="w-full py-3.5 px-5 rounded-xl bg-brand-teal hover:bg-brand-teal-hover text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs min-h-[46px]"
               >
-                <Check className="w-4 h-4" />
-                <span>Selesai &amp; Simpan Bukti</span>
+                <Check className="w-4 h-4 text-brand-lime" />
+                <span>Simpan Bukti &amp; Selesai</span>
               </button>
             </div>
 
@@ -570,85 +574,44 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </div>
             </div>
 
-            {/* QRIS Scan Area */}
-            <div className="p-4 sm:p-5 rounded-2xl border-2 border-red-500/30 bg-gradient-to-b from-red-50/40 via-white to-red-50/20 text-center space-y-3">
-              
-              <div className="flex items-center justify-between pb-2 border-b border-red-100 text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                  <span className="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded">QRIS</span>
-                  <span>Scan Kode QRIS di Bawah Ini</span>
-                </div>
-                
-                {/* Tombol Unggah QRIS Asli (memenuhi permintaan user: 'Nanti saya akan upload QRIS-nya') */}
-                <button
-                  type="button"
-                  onClick={() => setShowQrisUploader(!showQrisUploader)}
-                  className="text-[11px] font-bold text-brand-teal hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>{showQrisUploader ? 'Tutup Uploader' : 'Unggah QRIS Asli'}</span>
-                </button>
-              </div>
+              {/* QRIS Scan Area */}
+              <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-brand-teal/40 bg-gradient-to-b from-brand-mint/40 via-white to-brand-mint/20 text-center space-y-3 overflow-hidden shadow-xs">
+                {/* Accent top stripe */}
+                <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-brand-lime via-brand-teal to-brand-primary" />
 
-              {/* Panel Uploader QRIS (jika user mau upload QRIS baru miliknya sekarang juga) */}
-              {showQrisUploader && (
-                <div className="p-3 bg-white rounded-xl border border-brand-teal/40 text-left space-y-2 text-xs">
-                  <div className="font-bold text-slate-800 flex items-center justify-between">
-                    <span>Ganti / Unggah Gambar QRIS Toko Anda:</span>
-                    {qrisUploadSuccess && (
-                      <span className="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
-                        <Check className="w-3 h-3" /> Berhasil Diperbarui
-                      </span>
-                    )}
+                <div className="flex items-center justify-center pb-2 border-b border-brand-teal/20 text-xs gap-2">
+                  <span className="bg-red-600 text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow-2xs">QRIS</span>
+                  <span className="font-extrabold text-slate-900">Scan Barcode QRIS Resmi di Bawah Ini</span>
+                </div>
+
+                {/* Gambar QRIS Utama */}
+                <div className="max-w-[280px] sm:max-w-[320px] mx-auto bg-white p-2 rounded-2xl border-2 border-slate-200 shadow-sm">
+                  <img
+                    src={activeQrisUrl}
+                    alt="QRIS Resmi OTI*SMART JOURNEY"
+                    className="w-full h-auto rounded-xl object-contain mx-auto"
+                  />
+                </div>
+
+                {/* Identitas Rekening Perusahaan & Instruksi Scan */}
+                <div className="space-y-1.5 pt-1">
+                  <div className="text-xs font-black text-brand-primary uppercase tracking-tight">
+                    OTI*SMART JOURNEY · PT SAWAH JAYA TRANS
                   </div>
-                  <p className="text-[11px] text-slate-500">
-                    Pilih file gambar QRIS resmi milik toko/perusahaan Anda (PNG, JPG, WebP). QRIS akan langsung aktif di layar pemesanan.
+                  
+                  {/* Rekening Perusahaan Resmi */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-brand-teal/30 shadow-2xs">
+                    <span className="text-[10px] text-slate-500 font-bold">Rekening Perusahaan (BCA):</span>
+                    <strong className="text-xs font-mono font-extrabold text-brand-teal">8290-315-779</strong>
+                    <span className="text-[9px] text-slate-400 font-mono">a/n PT Sawah Jaya Trans</span>
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 max-w-md mx-auto leading-relaxed pt-1">
+                    Buka aplikasi m-Banking (<strong>BCA, Mandiri, BRI, BNI</strong>) atau e-Wallet (<strong>GoPay, OVO, ShopeePay, DANA</strong>), scan barcode QRIS di atas dan pastikan transfer tepat <strong>Rp{totalAmount.toLocaleString('id-ID')}</strong>.
                   </p>
-                  <div className="flex items-center gap-2">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleQrisFileChange}
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploadingQris}
-                      className="px-3 py-1.5 rounded-lg bg-brand-teal hover:bg-brand-teal-hover text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                    >
-                      {isUploadingQris ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
-                      <span>Pilih File Gambar QRIS</span>
-                    </button>
-                    <span className="text-[10px] text-slate-400">Ukuran maks 5MB</span>
-                  </div>
                 </div>
-              )}
 
-              {/* Gambar QRIS Utama */}
-              <div className="max-w-[290px] sm:max-w-[340px] mx-auto bg-white p-2.5 rounded-2xl border-2 border-slate-200 shadow-md">
-                <img
-                  src={activeQrisUrl}
-                  alt="QRIS Resmi OTI*SMART JOURNEY"
-                  className="w-full h-auto rounded-xl object-contain mx-auto"
-                />
               </div>
-
-              {/* Instruksi Scan */}
-              <div className="space-y-1">
-                <div className="text-xs font-bold text-slate-900">
-                  OTI*SMART JOURNEY · PT SAWAH JAYA TRANS
-                </div>
-                <div className="text-[11px] font-mono text-brand-teal font-semibold">
-                  NMID: ID1026537255642
-                </div>
-                <p className="text-[11px] text-slate-600 max-w-md mx-auto leading-relaxed">
-                  Buka aplikasi mobile banking (<strong>BCA, Mandiri, BRI, BNI</strong>) atau e-wallet (<strong>GoPay, OVO, ShopeePay, DANA</strong>), lalu scan barcode QRIS resmi di atas dan bayar tepat <strong>Rp{totalAmount.toLocaleString('id-ID')}</strong>.
-                </p>
-              </div>
-
-            </div>
 
             {/* Lampirkan Bukti Transfer (Wajib diunggah pelanggan) */}
             <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 space-y-2">

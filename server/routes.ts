@@ -229,8 +229,8 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
     const bookingNumber = `SJT-${dateCompact}-${randomSuffix}`;
     const bookingId = `BKG-${crypto.randomUUID()}`;
 
-    // 3. Kode Unik Pembayaran (< Rp1.000)
-    const uniqueCode = Number(req.body.uniqueCode) || Math.floor(100 + Math.random() * 899);
+    // 3. Kode Unik Pembayaran (maks. Rp300, mengutamakan hingga Rp200)
+    const uniqueCode = Number(req.body.uniqueCode) || (Math.random() < 0.7 ? Math.floor(101 + Math.random() * 99) : Math.floor(201 + Math.random() * 98));
     const totalAmount = pricing.price + uniqueCode;
 
     // 4. Simulasikan URL Payment Gateway
@@ -333,7 +333,8 @@ apiRouter.post('/bookings/taxi', (req: Request, res: Response) => {
 
   const rawFare = Math.ceil(Number(distanceKm) * ratePerKm);
   const baseFare = Math.max(minFare, rawFare);
-  const uniqueCode = Number(req.body.uniqueCode) || Math.floor(100 + Math.random() * 899);
+  // Kode Unik Pembayaran (maks. Rp300, mengutamakan hingga Rp200)
+  const uniqueCode = Number(req.body.uniqueCode) || (Math.random() < 0.7 ? Math.floor(101 + Math.random() * 99) : Math.floor(201 + Math.random() * 98));
   const totalAmount = baseFare + uniqueCode;
 
   const dateVal = bookingDate || getLocalDateString(0);
