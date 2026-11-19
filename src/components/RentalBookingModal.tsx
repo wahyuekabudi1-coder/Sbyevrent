@@ -25,7 +25,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
   const [city, setCity] = useState<'Surabaya' | 'Sidoarjo' | 'Malang'>('Surabaya');
   const [date, setDate] = useState<string>('');
   const [time, setTime] = useState<string>('08:00');
-  const [vehicleModel, setVehicleModel] = useState<'VinFast VF 5' | 'VinFast VF e34'>('VinFast VF 5');
+  const [vehicleModel, setVehicleModel] = useState<'VinFast VF e34'>('VinFast VF e34');
   const [durationHours, setDurationHours] = useState<number>(3);
   const [customerName, setCustomerName] = useState<string>('');
   const [customerPhone, setCustomerPhone] = useState<string>('');
@@ -68,8 +68,8 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
       if (!date || date < minD) {
         setDate(minD);
       }
-      if (prefill?.model && (prefill.model === 'VinFast VF 5' || prefill.model === 'VinFast VF e34')) {
-        setVehicleModel(prefill.model as any);
+      if (prefill?.model === 'VinFast VF e34') {
+        setVehicleModel('VinFast VF e34');
       }
       if (prefill?.hours) {
         setDurationHours(prefill.hours);
@@ -105,7 +105,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
   const currentPricing = pricingList.find(
     p => p.vehicle_model === vehicleModel && p.city === city && p.duration_hours === durationHours
   ) || {
-    price: vehicleModel === 'VinFast VF 5' ? (durationHours === 3 ? 240000 : durationHours === 5 ? 390000 : durationHours === 8 ? 620000 : 930000) : (durationHours === 3 ? 290000 : durationHours === 5 ? 460000 : durationHours === 8 ? 740000 : 1100000),
+    price: durationHours === 3 ? 290000 : durationHours === 5 ? 460000 : durationHours === 8 ? 740000 : 1100000,
     km_limit: durationHours === 3 ? 45 : durationHours === 5 ? 75 : durationHours === 8 ? 120 : 180
   };
 
@@ -284,15 +284,9 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                 {availError ? (
                   <p className="text-amber-700">{availError}</p>
                 ) : availability ? (
-                  <div className="grid grid-cols-2 gap-2.5 pt-1">
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-white border border-slate-200">
-                      <span className="text-slate-500 block text-[10px] sm:text-xs">VinFast VF 5</span>
-                      <strong className={`text-xs sm:text-sm font-bold ${availability.inventory['VinFast VF 5']?.available > 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
-                        {availability.inventory['VinFast VF 5']?.available || 0} unit tersedia
-                      </strong>
-                    </div>
-                    <div className="p-2 sm:p-2.5 rounded-lg bg-white border border-slate-200">
-                      <span className="text-slate-500 block text-[10px] sm:text-xs">VinFast VF e34</span>
+                  <div className="grid grid-cols-1 gap-2.5 pt-1">
+                    <div className="p-2 sm:p-2.5 rounded-lg bg-white border border-slate-200 flex items-center justify-between">
+                      <span className="text-slate-600 font-medium text-xs">VinFast VF e34</span>
                       <strong className={`text-xs sm:text-sm font-bold ${availability.inventory['VinFast VF e34']?.available > 0 ? 'text-emerald-700' : 'text-rose-600'}`}>
                         {availability.inventory['VinFast VF e34']?.available || 0} unit tersedia
                       </strong>
@@ -311,8 +305,8 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                 <label className="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">
                   Tahap 3 — Pilih Model Kendaraan Listrik
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {(['VinFast VF 5', 'VinFast VF e34'] as const).map(model => {
+                <div className="grid grid-cols-1 gap-3">
+                  {(['VinFast VF e34'] as const).map(model => {
                     const unitsLeft = availability?.inventory?.[model]?.available ?? 0;
                     const isSoldOut = unitsLeft <= 0;
                     return (
@@ -332,7 +326,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                         <div className="flex items-start justify-between">
                           <div>
                             <span className="text-[10px] font-bold text-brand-teal uppercase">
-                              {model === 'VinFast VF 5' ? 'Compact Crossover' : 'Spacious SUV'}
+                              Spacious SUV
                             </span>
                             <h4 className="font-bold text-sm sm:text-base text-slate-900 mt-0.5">{model}</h4>
                             <span className="text-[11px] text-slate-500 block mt-0.5">
@@ -376,7 +370,7 @@ export const RentalBookingModal: React.FC<RentalBookingModalProps> = ({
                   {[3, 5, 8, 12].map(hrs => {
                     const pkgPrice = pricingList.find(
                       p => p.vehicle_model === vehicleModel && p.duration_hours === hrs
-                    )?.price || (vehicleModel === 'VinFast VF 5' ? (hrs === 3 ? 240000 : hrs === 5 ? 390000 : hrs === 8 ? 620000 : 930000) : (hrs === 3 ? 290000 : hrs === 5 ? 460000 : hrs === 8 ? 740000 : 1100000));
+                    )?.price || (hrs === 3 ? 290000 : hrs === 5 ? 460000 : hrs === 8 ? 740000 : 1100000);
                     
                     const kmLimit = hrs === 3 ? 45 : hrs === 5 ? 75 : hrs === 8 ? 120 : 180;
 

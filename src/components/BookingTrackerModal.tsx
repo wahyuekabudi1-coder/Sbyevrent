@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Car, Phone, AlertCircle, Loader2, Shield } from 'lucide-react';
+import { X, Search, Car, Phone, AlertCircle, Loader2, Shield, Copy, Check } from 'lucide-react';
 import { api } from '../lib/api';
 
 interface BookingTrackerModalProps {
@@ -17,6 +17,13 @@ export const BookingTrackerModal: React.FC<BookingTrackerModalProps> = ({
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  const handleCopyCode = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
   // Body scroll lock
   useEffect(() => {
@@ -111,22 +118,42 @@ export const BookingTrackerModal: React.FC<BookingTrackerModalProps> = ({
           {/* Hasil Pencarian Booking */}
           {booking && (
             <div className="space-y-3 sm:space-y-4">
-              {/* Header Status */}
-              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase block font-semibold">Status Pemesanan</span>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-bold text-slate-900 capitalize text-sm">
-                      {booking.bookingStatus.replace('_', ' ')}
+              {/* Header Status & Salin Kode */}
+              <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200/80">
+                  <span className="text-[11px] text-slate-500 font-bold uppercase">Nomor Booking:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono font-bold text-xs bg-white text-brand-primary px-2.5 py-1 rounded-lg border border-slate-300 shadow-2xs">
+                      {booking.bookingNumber || code}
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800">
-                      {booking.paymentStatus === 'paid' ? 'LUNAS (Paid)' : booking.paymentStatus}
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCode(booking.bookingNumber || code)}
+                      className="px-2.5 py-1 rounded-lg bg-brand-mint hover:bg-brand-teal hover:text-white text-xs font-bold text-brand-teal transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                      title="Salin nomor booking"
+                    >
+                      {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedCode ? 'Tersalin' : 'Salin'}</span>
+                    </button>
                   </div>
                 </div>
-                <div className="text-left sm:text-right">
-                  <span className="text-[10px] text-slate-500 block">Jadwal Perjalanan:</span>
-                  <span className="text-xs font-bold text-slate-900">{booking.bookingDate} · {booking.bookingTime} WIB</span>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="text-[10px] sm:text-[11px] text-slate-500 uppercase block font-semibold">Status Pemesanan</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="font-bold text-slate-900 capitalize text-sm">
+                        {booking.bookingStatus.replace('_', ' ')}
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800">
+                        {booking.paymentStatus === 'paid' ? 'LUNAS (Paid)' : booking.paymentStatus}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-left sm:text-right">
+                    <span className="text-[10px] text-slate-500 block">Jadwal Perjalanan:</span>
+                    <span className="text-xs font-bold text-slate-900">{booking.bookingDate} · {booking.bookingTime} WIB</span>
+                  </div>
                 </div>
               </div>
 

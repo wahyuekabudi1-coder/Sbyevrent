@@ -39,7 +39,7 @@ export function initDatabase() {
     CREATE TABLE IF NOT EXISTS vehicles (
       id TEXT PRIMARY KEY,
       code TEXT UNIQUE NOT NULL,
-      model TEXT NOT NULL, -- 'VinFast VF 5' | 'VinFast VF e34'
+      model TEXT NOT NULL, -- 'VinFast VF e34'
       plate_number TEXT UNIQUE NOT NULL,
       city TEXT NOT NULL, -- 'Surabaya' | 'Sidoarjo' | 'Malang'
       driver_name TEXT,
@@ -230,7 +230,7 @@ function seedInitialData() {
     insertDriver.run('DRV-005', 'Joko Prasetyo', '081234567805', '3578010203920005', '123456', 'Driver Surabaya/Sidoarjo - Berpengalaman VinFast');
   }
 
-  // 3. Cek & Isi Armada Awal (5 Unit Sesuai Spesifikasi Perusahaan)
+  // 3. Cek & Isi Armada Awal (Hanya VinFast VF e34)
   // Setiap mobil memuat kode, model, plat nomor, kota, nama driver, nomor HP driver, dan status
   const fleetCount = (db.prepare('SELECT count(*) as count FROM vehicles').get() as { count: number }).count;
   if (fleetCount === 0) {
@@ -239,30 +239,26 @@ function seedInitialData() {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)
     `);
 
-    // 3 Unit VinFast VF 5
-    insertVehicle.run('VEH-001', 'SJT-VF5-01', 'VinFast VF 5', 'L 1821 EV', 'Surabaya', 'Budi Santoso', '081234567801', 'DRV-001', 'Armada Surabaya Pusat');
-    insertVehicle.run('VEH-002', 'SJT-VF5-02', 'VinFast VF 5', 'L 1822 EV', 'Surabaya', 'Ahmad Fauzi', '081234567802', 'DRV-002', 'Armada Surabaya Timur & Bandara');
-    insertVehicle.run('VEH-003', 'SJT-VF5-03', 'VinFast VF 5', 'W 1933 EV', 'Sidoarjo', 'Rudi Hermawan', '081234567803', 'DRV-003', 'Armada Sidoarjo');
-
-    // 2 Unit VinFast VF e34
-    insertVehicle.run('VEH-004', 'SJT-VFE34-01', 'VinFast VF e34', 'N 1744 EV', 'Malang', 'Dwi Cahyono', '081234567804', 'DRV-004', 'Armada Malang & Wisata');
+    // Unit VinFast VF e34
+    insertVehicle.run('VEH-004', 'SJT-VFE34-01', 'VinFast VF e34', 'W 1844 EV', 'Sidoarjo', 'Dwi Cahyono', '081234567804', 'DRV-004', 'Armada Sidoarjo');
     insertVehicle.run('VEH-005', 'SJT-VFE34-02', 'VinFast VF e34', 'L 1855 EV', 'Surabaya', 'Joko Prasetyo', '081234567805', 'DRV-005', 'Armada Surabaya');
   } else {
+    // Hapus seluruh armada VinFast VF 5 yang tersimpan di database (sisakan VinFast VF e34)
+    db.prepare(`UPDATE bookings SET assigned_vehicle_id = NULL WHERE assigned_vehicle_id IN (SELECT id FROM vehicles WHERE model = 'VinFast VF 5')`).run();
+    db.prepare(`DELETE FROM vehicles WHERE model = 'VinFast VF 5'`).run();
+
+    // Pastikan seluruh armada melayani wilayah Surabaya dan Sidoarjo (tidak ada kota di luar cakupan)
+    db.prepare(`UPDATE vehicles SET city = 'Sidoarjo' WHERE city = 'Malang'`).run();
+
     // Pastikan data mobil yang sudah ada memiliki driver_name dan driver_phone
     db.prepare(`
       UPDATE vehicles 
       SET driver_name = CASE 
-        WHEN code = 'SJT-VF5-01' THEN 'Budi Santoso'
-        WHEN code = 'SJT-VF5-02' THEN 'Ahmad Fauzi'
-        WHEN code = 'SJT-VF5-03' THEN 'Rudi Hermawan'
         WHEN code = 'SJT-VFE34-01' THEN 'Dwi Cahyono'
         WHEN code = 'SJT-VFE34-02' THEN 'Joko Prasetyo'
         ELSE COALESCE(driver_name, 'Driver Operasional')
       END,
       driver_phone = CASE 
-        WHEN code = 'SJT-VF5-01' THEN '081234567801'
-        WHEN code = 'SJT-VF5-02' THEN '081234567802'
-        WHEN code = 'SJT-VF5-03' THEN '081234567803'
         WHEN code = 'SJT-VFE34-01' THEN '081234567804'
         WHEN code = 'SJT-VFE34-02' THEN '081234567805'
         ELSE COALESCE(driver_phone, '081234567890')
@@ -273,7 +269,7 @@ function seedInitialData() {
 
   // 4. Cek & Isi Matriks Harga Rental
   // Mengikuti instruksi resmi: 3 jam (45 km), 5 jam (75 km), 8 jam (120 km), 12 jam (180 km)
-  // Harga VinFast VF 5 dan VF e34 dibedakan secara transparan
+  // Hanya untuk armada VinFast VF e34
   const pricingCount = (db.prepare('SELECT count(*) as count FROM rental_pricing').get() as { count: number }).count;
   if (pricingCount === 0) {
     const insertPricing = db.prepare(`
@@ -283,15 +279,7 @@ function seedInitialData() {
 
     const cities = ['Surabaya', 'Sidoarjo', 'Malang'];
 
-    // VinFast VF 5 (Harga referensi resmi perusahaan)
-    const vf5Rates = [
-      { hours: 3, km: 45, price: 240000 },
-      { hours: 5, km: 75, price: 390000 },
-      { hours: 8, km: 120, price: 620000 },
-      { hours: 12, km: 180, price: 930000 }
-    ];
-
-    // VinFast VF e34 (Kapasitas & segmen lebih besar, harga khusus)
+    // VinFast VF e34 (Tarif resmi)
     const vfe34Rates = [
       { hours: 3, km: 45, price: 290000 },
       { hours: 5, km: 75, price: 460000 },
@@ -300,13 +288,12 @@ function seedInitialData() {
     ];
 
     for (const city of cities) {
-      for (const r of vf5Rates) {
-        insertPricing.run(`PRC-VF5-${city}-${r.hours}H`, 'VinFast VF 5', city, r.hours, r.km, r.price, 50000, 2500);
-      }
       for (const r of vfe34Rates) {
         insertPricing.run(`PRC-VFE34-${city}-${r.hours}H`, 'VinFast VF e34', city, r.hours, r.km, r.price, 60000, 3000);
       }
     }
+  } else {
+    db.prepare(`DELETE FROM rental_pricing WHERE vehicle_model = 'VinFast VF 5'`).run();
   }
 }
 

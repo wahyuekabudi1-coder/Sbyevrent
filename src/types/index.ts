@@ -12,7 +12,7 @@ export interface SystemSettings {
 
 export interface RentalPricingItem {
   id: string;
-  vehicle_model: 'VinFast VF 5' | 'VinFast VF e34';
+  vehicle_model: 'VinFast VF e34';
   city: 'Surabaya' | 'Sidoarjo' | string;
   duration_hours: number;
   km_limit: number;
@@ -24,7 +24,7 @@ export interface RentalPricingItem {
 export interface Vehicle {
   id: string;
   code: string;
-  model: 'VinFast VF 5' | 'VinFast VF e34';
+  model: 'VinFast VF e34';
   plate_number: string;
   city: 'Surabaya' | 'Sidoarjo' | string;
   dedicated_driver_id?: string;

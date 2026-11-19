@@ -83,7 +83,7 @@ export const MainServices: React.FC<MainServicesProps> = ({ onOpenRental, onOpen
                   <span>Cara Pemesanan:</span>
                 </h4>
                 <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                  Reservasi minimal H-1 secara online. Tentukan tipe mobil (VF 5 / VF e34), durasi sewa, tanggal penjemputan, serta alamat penjemputan Anda.
+                  Reservasi minimal H-1 secara online. Tentukan armada VinFast VF e34, durasi sewa, tanggal penjemputan, serta alamat penjemputan Anda.
                 </p>
               </div>
             </div>

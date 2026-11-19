@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Logo } from './Logo';
 import { LiveryDividerStripe, LiveryStripe } from './EvLiveryDecals';
 import { ShieldCheck, Phone, Mail, MapPin } from 'lucide-react';
@@ -14,6 +14,27 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenRental,
   onOpenTaxi
 }) => {
+  const [copyrightClicks, setCopyrightClicks] = useState<number>(0);
+  const clickTimerRef = useRef<any>(null);
+
+  const handleCopyrightClick = () => {
+    const nextClicks = copyrightClicks + 1;
+    setCopyrightClicks(nextClicks);
+
+    clearTimeout(clickTimerRef.current);
+    clickTimerRef.current = setTimeout(() => {
+      setCopyrightClicks(0);
+    }, 4000);
+
+    if (nextClicks >= 10 && nextClicks <= 13) {
+      // Masuk ke dashboard admin
+      onNavigatePage('admin');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (nextClicks >= 14) {
+      // Jika diklik 14 kali atau lebih, akses hilang / direset
+      setCopyrightClicks(0);
+    }
+  };
   return (
     <footer className="bg-brand-dark text-slate-300 border-t border-brand-teal/20 relative">
       {/* Ornamen Garis Livery Mobil Listrik di Atas Footer */}
@@ -39,7 +60,7 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm pt-1">
-              Menghadirkan kenyamanan mobilitas ramah lingkungan di Jawa Timur dengan armada 100% mobil listrik VinFast VF 5 dan VF e34 bersama driver profesional bersertifikasi.
+              Menghadirkan kenyamanan mobilitas ramah lingkungan di Jawa Timur dengan armada 100% mobil listrik VinFast VF e34 bersama driver profesional bersertifikasi.
             </p>
 
             <div className="pt-2 flex items-center gap-2 text-xs text-slate-400">
@@ -150,8 +171,12 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Garis Bawah & Hak Cipta */}
         <div className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-brand-teal/20 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 text-center sm:text-left">
-          <p>
-            &copy; {new Date().getFullYear()} Surabaya EV Rent. Hak cipta dilindungi.
+          <p
+            onClick={handleCopyrightClick}
+            className="cursor-default select-none transition-colors"
+            title=""
+          >
+            &copy; {new Date().getFullYear()} Surabaya EV Rent. All Rights Reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
             <span>Kebijakan Privasi</span>

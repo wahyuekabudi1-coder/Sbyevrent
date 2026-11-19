@@ -79,11 +79,13 @@ apiRouter.get('/availability', (req: Request, res: Response) => {
   }
 
   try {
-    // Ambil semua armada aktif dan tidak sedang maintenance di kota tersebut
+    // Ambil semua armada aktif di wilayah layanan Surabaya dan Sidoarjo
     const totalVehicles = db.prepare(`
       SELECT id, model, city 
       FROM vehicles 
-      WHERE city = ? AND is_active = 1 AND in_maintenance = 0
+      WHERE (city = ? OR city IN ('Surabaya', 'Sidoarjo')) 
+        AND is_active = 1 
+        AND in_maintenance = 0
     `).all(city) as { id: string; model: string; city: string }[];
 
     // Ambil kendaraan yang SUDAH terbooking aktif pada tanggal tersebut
@@ -100,10 +102,9 @@ apiRouter.get('/availability', (req: Request, res: Response) => {
 
     const bookedVehicleIds = new Set(bookedRows.map(b => b.assigned_vehicle_id));
 
-    // Kelompokkan per tipe kendaraan (VinFast VF 5 dan VinFast VF e34)
+    // Kelompokkan untuk tipe kendaraan VinFast VF e34
     // Sesuai aturan: JANGAN menampilkan nomor polisi atau identitas kendaraan spesifik ke publik
     const summary: Record<string, { total: number; booked: number; available: number }> = {
-      'VinFast VF 5': { total: 0, booked: 0, available: 0 },
       'VinFast VF e34': { total: 0, booked: 0, available: 0 }
     };
 
@@ -150,6 +151,8 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
     dropoffAddress,
     notes
   } = req.body;
+
+  cleanExpiredBookings();
 
   // Validasi Input Dasar
   if (!city || !date || !vehicleModel || !durationHours || !customerName || !customerPhone || !pickupAddress) {
@@ -199,11 +202,11 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
   const expiresAt = new Date(Date.now() + lockTimeoutMinutes * 60 * 1000).toISOString();
 
   const transaction = db.transaction(() => {
-    // 1. Cari kendaraan yang tersedia untuk model, kota, dan tanggal tersebut
+    // 1. Cari kendaraan yang tersedia untuk model tersebut di wilayah Surabaya / Sidoarjo
     const availableVehicle = db.prepare(`
-      SELECT v.id, v.dedicated_driver_id 
+      SELECT v.id, v.dedicated_driver_id, v.city
       FROM vehicles v
-      WHERE v.city = ? 
+      WHERE (v.city = ? OR v.city IN ('Surabaya', 'Sidoarjo'))
         AND v.model = ? 
         AND v.is_active = 1 
         AND v.in_maintenance = 0
@@ -216,8 +219,9 @@ apiRouter.post('/bookings/rental', (req: Request, res: Response) => {
             AND b.booking_status NOT IN ('cancelled')
             AND b.payment_status NOT IN ('failed', 'expired')
         )
+      ORDER BY (CASE WHEN v.city = ? THEN 0 ELSE 1 END) ASC
       LIMIT 1
-    `).get(city, vehicleModel, date) as { id: string; dedicated_driver_id: string } | undefined;
+    `).get(city, vehicleModel, date, city) as { id: string; dedicated_driver_id: string; city: string } | undefined;
 
     if (!availableVehicle) {
       throw new Error('Maaf, seluruh armada pada tanggal dan kota yang Anda pilih sudah terpesan. Silakan pilih tanggal lain.');
@@ -844,7 +848,7 @@ apiRouter.post('/admin/vehicles', checkAdminAuth, (req: Request, res: Response) 
     return res.status(400).json({ success: false, message: 'Model kendaraan, nomor plat, dan kota wajib diisi.' });
   }
 
-  const generatedCode = code?.trim() || `SJT-${model.includes('VF 5') ? 'VF5' : 'VFE34'}-${Math.floor(10 + Math.random() * 90)}`;
+  const generatedCode = code?.trim() || `SJT-VFE34-${Math.floor(10 + Math.random() * 90)}`;
   const id = `VEH-${Date.now().toString().slice(-4)}`;
   const cleanDriverName = driverName?.trim() || 'Driver Siaga';
   const cleanDriverPhone = driverPhone?.trim() || '-';

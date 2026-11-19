@@ -594,20 +594,29 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 </div>
 
                 {/* Identitas Rekening Perusahaan & Instruksi Scan */}
-                <div className="space-y-1.5 pt-1">
+                <div className="space-y-2 pt-1">
                   <div className="text-xs font-black text-brand-primary uppercase tracking-tight">
                     OTI*SMART JOURNEY · PT SAWAH JAYA TRANS
                   </div>
                   
-                  {/* Rekening Perusahaan Resmi */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-brand-teal/30 shadow-2xs">
+                  {/* Rekening Perusahaan Resmi 0113528246 */}
+                  <div className="inline-flex flex-wrap items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-brand-teal/30 shadow-2xs">
                     <span className="text-[10px] text-slate-500 font-bold">Rekening Perusahaan (BCA):</span>
-                    <strong className="text-xs font-mono font-extrabold text-brand-teal">8290-315-779</strong>
-                    <span className="text-[9px] text-slate-400 font-mono">a/n PT Sawah Jaya Trans</span>
+                    <strong className="text-xs sm:text-sm font-mono font-extrabold text-brand-teal">0113528246</strong>
+                    <button
+                      type="button"
+                      onClick={() => handleCopy('0113528246')}
+                      className="px-2 py-0.5 rounded bg-brand-mint hover:bg-brand-teal hover:text-white text-[10px] font-bold text-brand-teal transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                      title="Salin nomor rekening"
+                    >
+                      <Copy className="w-3 h-3" />
+                      <span>Salin No. Rek</span>
+                    </button>
+                    <span className="text-[10px] text-slate-500 font-semibold">a/n PT Sawah Jaya Trans</span>
                   </div>
 
                   <p className="text-[11px] text-slate-600 max-w-md mx-auto leading-relaxed pt-1">
-                    Buka aplikasi m-Banking (<strong>BCA, Mandiri, BRI, BNI</strong>) atau e-Wallet (<strong>GoPay, OVO, ShopeePay, DANA</strong>), scan barcode QRIS di atas dan pastikan transfer tepat <strong>Rp{totalAmount.toLocaleString('id-ID')}</strong>.
+                    Buka aplikasi m-Banking (<strong>BCA, Mandiri, BRI, BNI</strong>) atau e-Wallet (<strong>GoPay, OVO, ShopeePay, DANA</strong>), scan barcode QRIS di atas atau transfer ke rekening perusahaan dan pastikan nominal transfer tepat <strong>Rp{totalAmount.toLocaleString('id-ID')}</strong>.
                   </p>
                 </div>
 

@@ -99,7 +99,7 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
             { '@type': 'City', 'name': 'Malang' },
             { '@type': 'City', 'name': 'Batu' }
           ],
-          'priceRange': 'Rp240.000 - Rp1.100.000',
+          'priceRange': 'Rp290.000 - Rp1.100.000',
           'paymentAccepted': 'QRIS, Virtual Account, Transfer Bank, Tunai',
           'currenciesAccepted': 'IDR'
         },
@@ -144,7 +144,7 @@ export const SeoHead: React.FC<SeoHeadProps> = ({
         'description': description,
         'offers': {
           '@type': 'AggregateOffer',
-          'lowPrice': '240000',
+          'lowPrice': '290000',
           'highPrice': '1100000',
           'priceCurrency': 'IDR'
         }

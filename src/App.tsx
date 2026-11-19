@@ -65,17 +65,34 @@ export default function App() {
       .catch(err => console.error('Gagal memuat tarif awal:', err));
   }, []);
 
+  // Navigation handler with browser URL synchronization (benar-benar ke URL halaman, bukan jendela mengambang)
+  const handleNavigatePage = (page: string) => {
+    setCurrentPage(page);
+    let targetPath = '/';
+    if (page === 'admin') targetPath = '/admin';
+    else if (page === 'driver') targetPath = '/driver';
+    else if (page === 'rental-booking' || page === 'rental') targetPath = '/pesan-rental';
+    else if (page === 'taxi-booking' || page === 'taxi') targetPath = '/taksi-listrik';
+    else if (page === 'seo-surabaya') targetPath = '/rental-mobil-listrik-surabaya';
+    else if (page === 'seo-sidoarjo') targetPath = '/rental-mobil-listrik-sidoarjo';
+    else if (page === 'seo-taxi') targetPath = '/taksi-listrik';
+    try {
+      window.history.pushState(null, '', targetPath);
+    } catch {
+      // fallback if in strict iframe
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Handler ke Halaman Fix Rental Booking (Bukan Modal/Jendela Mengambang)
   const handleOpenRental = (prefill?: { model?: string; hours?: number; city?: string }) => {
     setRentalPrefill(prefill);
-    setCurrentPage('rental-booking');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    handleNavigatePage('rental-booking');
   };
 
   // Handler ke Halaman Fix Taksi Booking (Bukan Modal/Jendela Mengambang)
   const handleOpenTaxi = () => {
-    setCurrentPage('taxi-booking');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    handleNavigatePage('taxi-booking');
   };
 
   const handleOpenTrackerWithCode = (code: string) => {
@@ -91,14 +108,14 @@ export default function App() {
     }, 400);
   };
 
-  // Render Admin Dashboard Page
+  // Render Admin Dashboard Page (Halaman Penuh, Bukan Jendela Mengambang)
   if (currentPage === 'admin') {
-    return <AdminDashboard onBackHome={() => setCurrentPage('home')} />;
+    return <AdminDashboard onBackHome={() => handleNavigatePage('home')} />;
   }
 
   // Render Driver Portal Page
   if (currentPage === 'driver') {
-    return <DriverPortal onBackHome={() => setCurrentPage('home')} />;
+    return <DriverPortal onBackHome={() => handleNavigatePage('home')} />;
   }
 
   // Render Dedicated Fixed Rental Booking Page (Bukan Jendela Mengambang)
@@ -108,7 +125,7 @@ export default function App() {
         <RentalBookingPage
           pricingList={pricingList}
           prefill={rentalPrefill}
-          onBackHome={() => setCurrentPage('home')}
+          onBackHome={() => handleNavigatePage('home')}
           onOpenPaymentModal={(bNum) => setPaymentBookingNumber(bNum)}
           onOpenTracker={handleOpenTrackerWithCode}
         />
@@ -134,7 +151,7 @@ export default function App() {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900">
         <TaxiBookingPage
-          onBackHome={() => setCurrentPage('home')}
+          onBackHome={() => handleNavigatePage('home')}
           onOpenPaymentModal={(bNum) => setPaymentBookingNumber(bNum)}
           onOpenTracker={handleOpenTrackerWithCode}
         />
@@ -162,7 +179,7 @@ export default function App() {
       <div className="min-h-screen flex flex-col bg-slate-50">
         <Navbar
           currentPage={currentPage}
-          onNavigatePage={setCurrentPage}
+          onNavigatePage={handleNavigatePage}
           onOpenRental={() => handleOpenRental()}
           onOpenTaxi={handleOpenTaxi}
           onOpenTracker={() => setIsTrackerOpen(true)}
@@ -170,13 +187,13 @@ export default function App() {
         <main className="flex-1">
           <CitySeoPage
             cityKey={cityKey}
-            onBackHome={() => setCurrentPage('home')}
+            onBackHome={() => handleNavigatePage('home')}
             onOpenRental={city => handleOpenRental({ city })}
             onOpenTaxi={city => handleOpenTaxi()}
           />
         </main>
         <Footer
-          onNavigatePage={setCurrentPage}
+          onNavigatePage={handleNavigatePage}
           onOpenRental={() => handleOpenRental()}
           onOpenTaxi={handleOpenTaxi}
         />
@@ -203,7 +220,7 @@ export default function App() {
       {/* SECTION 1 — HEADER */}
       <Navbar
         currentPage={currentPage}
-        onNavigatePage={setCurrentPage}
+        onNavigatePage={handleNavigatePage}
         onOpenRental={() => handleOpenRental()}
         onOpenTaxi={handleOpenTaxi}
         onOpenTracker={() => setIsTrackerOpen(true)}
@@ -234,7 +251,7 @@ export default function App() {
 
       {/* SECTION 13 — FOOTER DAN IDENTITAS PERUSAHAAN */}
       <Footer
-        onNavigatePage={setCurrentPage}
+        onNavigatePage={handleNavigatePage}
         onOpenRental={() => handleOpenRental()}
         onOpenTaxi={handleOpenTaxi}
       />

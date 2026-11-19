@@ -143,7 +143,7 @@ export const DriverPortal: React.FC<DriverPortalProps> = ({ onBackHome }) => {
                 Login Driver Resmi SJ Trans
               </h1>
               <p className="text-xs text-slate-500">
-                Akses jadwal penjemputan armada VinFast VF 5 &amp; VF e34
+                Akses jadwal penjemputan armada VinFast VF e34
               </p>
             </div>
 

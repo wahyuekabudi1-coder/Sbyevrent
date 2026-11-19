@@ -48,7 +48,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRental, onOpenTaxi }) => {
             </h1>
 
             <p className="text-sm sm:text-base lg:text-lg text-slate-600 leading-relaxed max-w-2xl">
-              Nikmati kenyamanan mobilitas ramah lingkungan bersama <strong>Surabaya EV Rent</strong> (Powered by Smart Journey). Layanan rental harian (H-1) dan taksi listrik di Surabaya dan Sidoarjo dengan armada modern VinFast VF 5 &amp; VF e34 serta driver profesional bersertifikasi.
+              Nikmati kenyamanan mobilitas ramah lingkungan bersama <strong>Surabaya EV Rent</strong> (Powered by Smart Journey). Layanan rental harian (H-1) dan taksi listrik di Surabaya dan Sidoarjo dengan armada modern VinFast VF e34 serta driver profesional bersertifikasi.
             </p>
 
             {/* Dua CTA Utama: Full width on mobile, auto on sm+ */}
@@ -174,7 +174,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenRental, onOpenTaxi }) => {
                 <div className="absolute bottom-2.5 sm:bottom-3 left-3 sm:left-4 right-3 sm:right-4 text-white flex items-end justify-between z-10">
                   <div>
                     <span className="text-[10px] sm:text-xs font-bold text-brand-lime font-mono">
-                      VF 5 &amp; VF e34 SERIES
+                      VF e34 SERIES
                     </span>
                     <h4 className="text-sm sm:text-base font-bold text-white">100% Full Electric SUV</h4>
                   </div>

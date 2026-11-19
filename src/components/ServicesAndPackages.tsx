@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calendar, Navigation, CheckCircle2, Info } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Calendar, Navigation, CheckCircle2, Info, ChevronLeft, ChevronRight, MoveHorizontal } from 'lucide-react';
 import { LiveryStripe, CornerStrapDecal } from './EvLiveryDecals';
 import { RentalPricingItem } from '../types';
 
@@ -14,19 +14,19 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
   onOpenRental,
   onOpenTaxi
 }) => {
-  const [selectedModel, setSelectedModel] = useState<'VinFast VF 5' | 'VinFast VF e34'>('VinFast VF 5');
+  const [selectedModel] = useState<'VinFast VF e34'>('VinFast VF e34');
+  const packagesScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollPackages = (direction: 'left' | 'right') => {
+    if (!packagesScrollRef.current) return;
+    const amount = direction === 'left' ? -280 : 280;
+    packagesScrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  };
 
   // Filter paket berdasarkan model yang dipilih
   const modelPackages = pricingList.filter(p => p.vehicle_model === selectedModel && p.city === 'Surabaya');
   
   // Fallback data jika backend baru booting
-  const defaultVF5 = [
-    { duration_hours: 3, km_limit: 45, price: 240000 },
-    { duration_hours: 5, km_limit: 75, price: 390000 },
-    { duration_hours: 8, km_limit: 120, price: 620000 },
-    { duration_hours: 12, km_limit: 180, price: 930000 },
-  ];
-
   const defaultVFe34 = [
     { duration_hours: 3, km_limit: 45, price: 290000 },
     { duration_hours: 5, km_limit: 75, price: 460000 },
@@ -34,9 +34,7 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
     { duration_hours: 12, km_limit: 180, price: 1100000 },
   ];
 
-  const displayPackages = modelPackages.length > 0 
-    ? modelPackages 
-    : (selectedModel === 'VinFast VF 5' ? defaultVF5 : defaultVFe34);
+  const displayPackages = modelPackages.length > 0 ? modelPackages : defaultVFe34;
 
   return (
     <div className="space-y-12 sm:space-y-16 lg:space-y-20 py-12 sm:py-16 lg:py-20 bg-white">
@@ -100,7 +98,7 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
                 </div>
                 <div className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
                   <CheckCircle2 className="w-4 h-4 text-brand-teal shrink-0 mt-0.5" />
-                  <span>Pilihan armada VinFast VF 5 dan VF e34</span>
+                  <span>Armada resmi VinFast VF e34 (100% Listrik)</span>
                 </div>
                 <div className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
                   <CheckCircle2 className="w-4 h-4 text-brand-teal shrink-0 mt-0.5" />
@@ -213,37 +211,52 @@ export const ServicesAndPackages: React.FC<ServicesAndPackagesProps> = ({
               </p>
             </div>
 
-            {/* Model Selector Tabs: Responsive width */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto">
-              <button
-                onClick={() => setSelectedModel('VinFast VF 5')}
-                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer min-h-[38px] ${
-                  selectedModel === 'VinFast VF 5'
-                    ? 'bg-brand-teal text-white shadow-xs'
-                    : 'text-slate-600 hover:text-brand-primary'
-                }`}
-              >
-                VinFast VF 5
-              </button>
-              <button
-                onClick={() => setSelectedModel('VinFast VF e34')}
-                className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer min-h-[38px] ${
-                  selectedModel === 'VinFast VF e34'
-                    ? 'bg-brand-teal text-white shadow-xs'
-                    : 'text-slate-600 hover:text-brand-primary'
-                }`}
-              >
-                VinFast VF e34
-              </button>
+            {/* Model Selector Tabs & Slider Arrow Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+              <div className="flex items-center p-1 bg-slate-100 rounded-xl flex-1 sm:flex-initial">
+                <div className="flex-1 sm:flex-initial px-4 py-2 text-xs font-bold rounded-lg bg-brand-teal text-white shadow-xs min-h-[38px] flex items-center justify-center">
+                  VinFast VF e34
+                </div>
+              </div>
+
+              {/* Slider Arrow Buttons for Packages */}
+              <div className="flex items-center gap-1.5 ml-auto sm:ml-0">
+                <button
+                  type="button"
+                  onClick={() => scrollPackages('left')}
+                  className="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-brand-teal hover:bg-brand-mint/50 text-brand-primary flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                  aria-label="Geser Paket ke Kiri"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollPackages('right')}
+                  className="w-9 h-9 rounded-xl bg-white border border-slate-300 hover:border-brand-teal hover:bg-brand-mint/50 text-brand-primary flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                  aria-label="Geser Paket ke Kanan"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Grid 4 Paket Durasi: 1 col on <540px, 2 col on sm, 4 col on lg */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* Hint geser paket di mobile */}
+          <div className="flex sm:hidden items-center gap-1.5 text-[11px] font-bold text-brand-teal bg-brand-mint/60 px-3 py-1.5 rounded-lg border border-brand-teal/20 mb-3 w-fit">
+            <MoveHorizontal className="w-3.5 h-3.5 animate-pulse" />
+            <span>Geser ke samping untuk melihat seluruh paket durasi</span>
+          </div>
+
+          {/* 4 Paket Durasi: Horizontal swipeable on mobile, responsive grid on desktop */}
+          <div
+            ref={packagesScrollRef}
+            className="flex overflow-x-auto snap-x snap-mandatory pb-4 gap-4 scrollbar-none sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             {displayPackages.map((pkg, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 flex flex-col justify-between hover:border-brand-teal hover:shadow-xs transition-all"
+                className="shrink-0 w-[270px] sm:w-auto snap-center rounded-2xl border-2 border-slate-200 bg-white p-5 sm:p-6 flex flex-col justify-between hover:border-brand-teal hover:shadow-md transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5 sm:mb-2">

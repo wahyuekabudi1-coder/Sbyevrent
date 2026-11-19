@@ -13,7 +13,7 @@ const CITY_SEO_DATA = {
     title: 'Rental Mobil Listrik Surabaya dengan Driver Profesional',
     metaTitle: 'Surabaya EV Rent - Rental Mobil Listrik Surabaya | VinFast EV',
     description:
-      'Layanan sewa dan rental mobil listrik VinFast VF 5 dan VF e34 di Surabaya oleh Surabaya EV Rent. Sudah termasuk driver ramah & pengisian baterai. Solusi mobilitas bisnis, delegasi, dan wisata perkotaan.',
+      'Layanan sewa dan rental mobil listrik VinFast VF e34 di Surabaya oleh Surabaya EV Rent. Sudah termasuk driver ramah & pengisian baterai. Solusi mobilitas bisnis, delegasi, dan wisata perkotaan.',
     badge: 'Kota Metropolitan & Bisnis Jawa Timur',
     highlights: [
       {
@@ -29,8 +29,8 @@ const CITY_SEO_DATA = {
         desc: 'Didukung ketersediaan SPKLU di pusat perbelanjaan ternama Surabaya (Tunjungan Plaza, Pakuwon Mall, Galaxy Mall) yang dikelola penuh oleh driver kami.'
       }
     ],
-    pricingSummary: 'Paket rental mulai Rp240.000 (3 Jam / 45 km) hingga Rp930.000 (12 Jam / 180 km).',
-    vehicleList: ['VinFast VF 5 (Compact EV Crossover)', 'VinFast VF e34 (Spacious SUV)']
+    pricingSummary: 'Paket rental mulai Rp290.000 (3 Jam / 45 km) hingga Rp1.100.000 (12 Jam / 180 km).',
+    vehicleList: ['VinFast VF e34 (Spacious SUV)']
   },
   sidoarjo: {
     title: 'Rental Mobil Listrik Sidoarjo — Mobilitas Industri & Niaga',
@@ -53,7 +53,7 @@ const CITY_SEO_DATA = {
       }
     ],
     pricingSummary: 'Pilihan fleksibel 3 jam, 5 jam, 8 jam, dan 12 jam dengan garansi mobil terawat dan wangi.',
-    vehicleList: ['VinFast VF 5 (Agile Urban EV)']
+    vehicleList: ['VinFast VF e34 (Spacious SUV)']
   },
   taxi: {
     title: 'Taksi Mobil Listrik Jawa Timur — Tarif Pasti Rp7.000 / km',
@@ -76,7 +76,7 @@ const CITY_SEO_DATA = {
       }
     ],
     pricingSummary: 'Tarif dasar Rp7.000/km dengan ketentuan tarif minimum hanya Rp25.000.',
-    vehicleList: ['VinFast VF 5', 'VinFast VF e34']
+    vehicleList: ['VinFast VF e34']
   }
 };
 
